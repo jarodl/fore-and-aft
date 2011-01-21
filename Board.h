@@ -110,17 +110,21 @@ class Board
                 canMove = true;
               break;
             default:
+              std::cerr << "Warning: attempting to move an invalid game token." << std::endl;
               canMove = false;
               break;
           }
         }
       }
+      else
+        std::cerr << "Warning: attempting to move outside of the game board or diagonally." << std::endl;
 
       return canMove;
     }
 
     void testCanMove()
     {
+      std::cout << "Should be false: " << std::endl;
       Token t = squares[0][0];
       std::cout << "Can move (0, 0) to (-1, -1): " << canMove(t, 0, 0) << std::endl;
       std::cout << "Can move (0, 0) to (1, 1): " << canMove(t, 1, 1) << std::endl;
@@ -130,9 +134,26 @@ class Board
       std::cout << "Can move (2, 2) to (3, 3): " << canMove(t, 3, 3) << std::endl;
       t = squares[4][4];
       std::cout << "Can move (4, 4) to (3, 3): " << canMove(t, 3, 3) << std::endl;
+      std::cout << "Can move (4, 4) to (3, 2): " << canMove(t, 3, 2) << std::endl;
+      t = squares[2][4];
+      std::cout << "Can move (2, 4) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      std::cout << std::endl;
+
+      std::cout << "Should be true: " << std::endl;
       t = squares[1][2];
       std::cout << "Can move (1, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      t = squares[3][2];
+      std::cout << "Can move (3, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      std::cout << "Can move (4, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      t = squares[2][3];
+      std::cout << "Can move (2, 3) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      std::cout << std::endl;
 
+      std::cout << "Should display a warning: " << std::endl;
+      canMove(t, -1, -1);
+      t = squares[4][0];
+      canMove(t, 4, 1);
+      std::cout << std::endl;
     }
 
     friend std::ostream& operator<< (std::ostream& output,
