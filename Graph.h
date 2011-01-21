@@ -22,47 +22,14 @@
 #include <vector>
 #include <iostream>
 
-template <typename Type>
+template <typename T>
 class Graph
 {
   private:
-    class Node
+    struct Node
     {
-      public:
-        Node()
-        {
-        }
-
-        Type getValue() const
-        {
-          return value;
-        }
-
-        void setValue(const Type v)
-        {
-          value = v;
-        }
-
-        friend std::ostream& operator>> (std::istream& input,
-            Node& n)
-        {
-          Type v;
-          input >> v;
-          n.setValue(v);
-
-          return input;
-        }
-
-        friend std::ostream& operator<< (std::ostream& output,
-            const Node& n)
-        {
-          output << n.getValue();
-          return output;
-        }
-
-      private:
-        Type value;
-        std::vector<Node> neighbors;
+      T data;
+      std::vector<Node*> neighbors;
     };
 
   public:
@@ -74,27 +41,45 @@ class Graph
     {
     }
 
-    bool isAdjacent(Type *x, Type *y)
+    //bool adjacent(T *x, T *y)
+    //{
+      //// need to check if both nodes are in the graph
+      ////for (unsigned int i = 0; i < x->neighbors.size(); i++)
+        ////if (x->neighbors.at(i)->data == y)
+          ////return true;
+
+      //return false;
+    //}
+
+    //void addEdge(T *x, T *y)
+    //{
+      //x->neighbors.push_back(y);
+      //y->neighbors.push_back(x);
+    //}
+
+    //void removeEdge(T *x, T *y)
+    //{
+      //if (adjacent(x, y))
+      //{
+      //}
+    //}
+
+    void add(T *x)
     {
-      return true;
+      //Node *n = new Node();
+      //n->data = *x;
+      //nodes.push_back(n);
     }
 
-    friend std::ostream& operator<< (std::ostream& output,
-        const Graph<Type>& g)
+    void remove(T *x)
     {
-      for (int i = 0; i < 5; i++)
-        output << " ";
-        
-      return output;
+      //for (unsigned int i = 0; i < nodes.size(); i++)
+        //if (nodes.at(i)->data == x)
+          //nodes.erase(i);
     }
-
-    //bool isAdjacent(Node *x, Node *y);
-    //bool neighborsFor(Node *x);
-    //void addEdge(Node *x, Node *y);
-    //void removeEdge(Node *from, Node *to);
 
   private:
-    std::vector<Node> nodes;
+    std::vector<Node*> nodes;
 };
 
 #endif

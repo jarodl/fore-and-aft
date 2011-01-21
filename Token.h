@@ -20,6 +20,8 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#include <vector>
+
 class Token
 {
   public:
@@ -27,28 +29,15 @@ class Token
     {
     }
 
-    Token(int newX, int newY, char t)
+    Token(char t)
     {
-      x = newX;
-      y = newY;
       type = t;
     }
 
     Token(const Token &cpy)
     {
-      x = cpy.getX();
-      y = cpy.getY();
       type = cpy.getType();
-    }
-
-    int getX() const
-    {
-      return x;
-    }
-
-    int getY() const
-    {
-      return y;
+      neighbors = cpy.getNeighbors();
     }
 
     char getType() const
@@ -56,19 +45,14 @@ class Token
       return type;
     }
 
-    void setX(const int newX)
-    {
-      x = newX;
-    }
-
-    void setY(const int newY)
-    {
-      y = newY;
-    }
-
     void setType(const char newType)
     {
       type = newType;
+    }
+
+    bool operator==(const Token t) const
+    {
+      return (type == t.getType());
     }
 
     bool operator==(const char t) const
@@ -81,9 +65,39 @@ class Token
       return type != t;
     }
 
+    void addNeighbor(Token t)
+    {
+      neighbors.push_back(t);
+    }
+
+    void removeNeighbor(Token t)
+    {
+      for (unsigned int i = 0; i < neighbors.size(); i++)
+        if (neighbors.at(i) == t)
+          neighbors.erase(neighbors.begin()+i);
+    }
+
+    void removeAllNeighbors()
+    {
+      neighbors.clear();
+    }
+
+    bool isAdjacent(Token t)
+    {
+      for (unsigned int i = 0; i < neighbors.size(); i++)
+        if (neighbors.at(i) == t)
+          return true;
+      return false;
+    }
+
+    std::vector<Token> getNeighbors() const
+    {
+      return neighbors;
+    }
+
   private:
-    int x, y;
     char type;
+    std::vector< Token > neighbors;
 };
 
 #endif

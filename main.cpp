@@ -17,8 +17,7 @@
  */
 
 #include <iostream>
-#include "Graph.h"
-#include "Board.h"
+#include "Solver.h"
 
 int main(int argc, char* argv[])
 {
@@ -26,12 +25,17 @@ int main(int argc, char* argv[])
   printf("Enter the size of the board in the format (w, h): ");
   scanf("%d, %d", &boardWidth, &boardHeight);
 
+  //Solver v = Solver(boardWidth, boardHeight);
+
   Board *b = new Board(boardWidth, boardHeight);
   std::cout << *b << std::endl;
 
   b->testCanMove();
   b->testMove();
   std::cout << *b << std::endl;
+
+  delete b;
+  b = NULL;
 
   return 0;
 }
