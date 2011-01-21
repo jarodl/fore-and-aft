@@ -30,6 +30,8 @@ int main(int argc, char* argv[])
   std::cout << *b << std::endl;
 
   b->testCanMove();
+  b->testMove();
+  std::cout << *b << std::endl;
 
   return 0;
 }

@@ -33,7 +33,7 @@
 class Board
 {
   public:
-    Board(int w, int h) : squares(w, std::vector<Token>(h))
+    Board(int w, int h) : squares(h, std::vector<Token>(w))
     {
       width = w;
       height = h;
@@ -71,14 +71,19 @@ class Board
       squares[xOffset][yOffset] = Token(xOffset, yOffset, OPEN);
     }
 
-    void move(Token one, Token two)
+    void move(Token &one, Token &two)
     {
       Token copy = one;
-      squares[one.getX()][one.getY()] = two;
-      squares[two.getX()][two.getY()] = copy;
+      one = two;
+      two = copy;
     }
 
-    // TODO: Refactor this shiz.
+    void testMove()
+    {
+      move(squares[2][1], squares[2][2]);
+      move(squares[2][0], squares[2][1]);
+    }
+
     bool canMove(const Token token, int x, int y)
     {
       bool canMove = false;
@@ -159,11 +164,19 @@ class Board
     friend std::ostream& operator<< (std::ostream& output,
         const Board& b)
     {
+      // DEBUGGING
+      output << "  ";
+      for (int i = 0; i < b.width; i++)
+        output << std::setw(2) << i;
+      output << std::endl;
+
       for (int i = 0; i < b.squares.size(); i++)
       {
+        // DEBUGGING
+        output << std::setw(2) << i;
         for (int j = 0; j < b.squares[i].size(); j++)
         {
-          output << std::setw(2) << b.squares[i][j].getType();
+          output << std::setw(2) << b.squares[j][i].getType();
         }
         output << std::endl;
       }
