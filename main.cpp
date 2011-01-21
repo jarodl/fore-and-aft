@@ -18,11 +18,18 @@
 
 #include <iostream>
 #include "Graph.h"
+#include "Board.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+  int boardWidth, boardHeight;
+  printf("Enter the size of the board in the format (w, h): ");
+  scanf("%d, %d", &boardWidth, &boardHeight);
 
-  Graph *g = new Graph();
+  Board *b = new Board(boardWidth, boardHeight);
+  std::cout << *b << std::endl;
+
+  b->testCanMove();
 
   return 0;
 }

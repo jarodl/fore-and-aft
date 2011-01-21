@@ -20,28 +20,81 @@
 #define GRAPH_H
 
 #include <vector>
-#include <string>
+#include <iostream>
 
+template <typename Type>
 class Graph
 {
   private:
-    struct node
+    class Node
     {
-      std::string value;
-      std::vector<node> adj_list;
+      public:
+        Node()
+        {
+        }
+
+        Type getValue() const
+        {
+          return value;
+        }
+
+        void setValue(const Type v)
+        {
+          value = v;
+        }
+
+        friend std::ostream& operator>> (std::istream& input,
+            Node& n)
+        {
+          Type v;
+          input >> v;
+          n.setValue(v);
+
+          return input;
+        }
+
+        friend std::ostream& operator<< (std::ostream& output,
+            const Node& n)
+        {
+          output << n.getValue();
+          return output;
+        }
+
+      private:
+        Type value;
+        std::vector<Node> neighbors;
     };
 
   public:
-    Graph();
-    bool isAdjacent(node *x, node *y);
-    bool neighborsFor(node *x);
-    void addEdge(node *x, node *y);
-    void removeEdge(node *from, node *to);
-    std::string getNodeValue(node *x);
-    void setNodeValue(node *x, std::string v);
+    Graph()
+    {
+    }
+
+    ~Graph()
+    {
+    }
+
+    bool isAdjacent(Type *x, Type *y)
+    {
+      return true;
+    }
+
+    friend std::ostream& operator<< (std::ostream& output,
+        const Graph<Type>& g)
+    {
+      for (int i = 0; i < 5; i++)
+        output << " ";
+        
+      return output;
+    }
+
+    //bool isAdjacent(Node *x, Node *y);
+    //bool neighborsFor(Node *x);
+    //void addEdge(Node *x, Node *y);
+    //void removeEdge(Node *from, Node *to);
 
   private:
-    std::vector<node> nodes;
+    std::vector<Node> nodes;
 };
 
 #endif

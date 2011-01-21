@@ -3,10 +3,10 @@
  *
  *       Filename:  Graph.cpp
  *
- *    Description:  
+ *    Description:  Graph implementation.
  *
  *        Version:  1.0
- *        Created:  01/18/2011 20:26:48
+ *        Created:  01/20/2011 10:22:18
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -17,34 +17,3 @@
  */
 
 #include "Graph.h"
-
-Graph::Graph()
-{
-}
-
-bool Graph::isAdjacent(node *x, node *y)
-{
-  return true;
-}
-
-bool Graph::neighborsFor(node *x)
-{
-  return true;
-}
-
-void Graph::addEdge(node *x, node *y)
-{
-}
-
-void Graph::removeEdge(node *from, node *to)
-{
-}
-
-std::string Graph::getNodeValue(node *x)
-{
-  return "";
-}
-
-void Graph::setNodeValue(node *x, std::string v)
-{
-}
