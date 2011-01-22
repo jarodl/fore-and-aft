@@ -28,18 +28,5 @@ int main(int argc, char* argv[])
   Solver v = Solver(boardWidth, boardHeight);
   v.searchGoalDF();
 
-  //std::cout << v << std::endl;
-
-  //Board *b = new Board(boardWidth, boardHeight);
-  //std::cout << *b << std::endl;
-
-  ////b->testCanMove();
-  //b->testMove();
-
-  //std::cout << *b << std::endl;
-
-  //delete b;
-  //b = NULL;
-
   return 0;
 }
