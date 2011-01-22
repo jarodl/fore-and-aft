@@ -20,6 +20,7 @@
 #define SOLVER_H
 
 #include "Board.h"
+#include <queue>
 
 class Solver
 {
@@ -63,8 +64,26 @@ class Solver
       }
     }
 
-    void serachGoalBF()
+    void searchGoalBF()
     {
+      std::queue<Node*> q = std::queue<Node*>();
+
+      Node *currentNode;
+      for (unsigned int i = 0; i < nodes.size(); i++)
+      {
+        currentNode = &nodes.at(i);
+        q.push(currentNode);
+
+        while (!q.empty())
+        {
+          Node *temp = q.front();
+          q.pop();
+
+          if (temp->data.isGoal())
+          {
+          }
+        }
+      }
     }
 
     void depthFirstSearch()
@@ -85,6 +104,9 @@ class Solver
       else
       {
         // generate new states
+        // TODO:
+        // Only generate one state here so we don't generate states we end up
+        // not using
         std::vector<Board> boards = currentNode->data.getNextBoards();
         for (unsigned int i = 0; i < boards.size(); i++)
           addNeighborToNode(currentNode, boards.at(i));
