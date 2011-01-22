@@ -36,8 +36,7 @@ class Board
   public:
     Board(int w, int h) : squares(h, std::vector<Token>(w))
     {
-      std::cout << "Called init board" << std::endl;
-      resetBoard();
+      resetBoard(UPPER_LEFT, LOWER_RIGHT);
       determinePossibleMoves();
     }
 
@@ -46,7 +45,7 @@ class Board
       determinePossibleMoves();
     }
 
-    void resetBoard()
+    void resetBoard(char upperLeft, char lowerRight)
     {
       int xOffset = squares.size()/2;
       int yOffset = squares[0].size()/2;
@@ -58,11 +57,11 @@ class Board
           if ((x < squares.size() - xOffset ) &&
               (y < squares[x].size() - yOffset))
           {
-            squares[x][y] = Token(UPPER_LEFT);
+            squares[x][y] = Token(upperLeft);
           }
           else if (((int)x >= xOffset) && ((int)y >= yOffset))
           {
-            squares[x][y] = Token(LOWER_RIGHT);
+            squares[x][y] = Token(lowerRight);
           }
           // Invalid move
           else
@@ -128,6 +127,12 @@ class Board
 
     void determinePossibleMoves()
     {
+
+      // TODO:
+      // This function can run significantly faster by only checking the
+      // locations of the two tokens that were swapped.
+      // DO IT!
+
       // Clear the stack of tokens since the possible moves have changed.
       while (!movableTokens.empty())
         movableTokens.pop();
@@ -157,7 +162,7 @@ class Board
         {
           if (canMove(t, x, y, x + i, y))
             t->addNeighbor(&squares[x + i][y]);
-          if (canMove(t, x, y, x, y + i))
+          else if (canMove(t, x, y, x, y + i))
             t->addNeighbor(&squares[x][y + i]);
         }
       }
@@ -167,7 +172,7 @@ class Board
         {
           if (canMove(t, x, y, x - i, y))
             t->addNeighbor(&squares[x - i][y]);
-          if (canMove(t, x, y, x, y - i))
+          else if (canMove(t, x, y, x, y - i))
             t->addNeighbor(&squares[x][y - i]);
         }
       }
@@ -303,6 +308,29 @@ class Board
       }
         
       return output;
+    }
+
+    bool isGoal()
+    {
+      Board *goalKey = new Board(squares.size(), squares.size());
+      goalKey->resetBoard(LOWER_RIGHT, UPPER_LEFT);
+
+      return (*goalKey == *this);
+    }
+
+    bool operator==(const Board b)
+    {
+      for (unsigned int x = 0; x < squares.size(); x++)
+        for (unsigned int y = 0; y < squares[x].size(); y++)
+          if (b.squares[x][y] != squares[x][y])
+            return false;
+
+      return true;
+    }
+
+    bool operator!=(const Board b)
+    {
+      return !(*this == b);
     }
     
   public:

@@ -24,24 +24,41 @@
 class Solver
 {
   private:
-    struct Node
+    class Node
     {
-      Node(Board b) : data(b)
-      {
-        // TODO:
-        // this could be very bad
-        std::vector<Board> boardStates = data.getNextBoards();
-        for (unsigned int i = 0; i < boardStates.size(); i++)
+      public:
+        Node(Board b) : data(b)
         {
-          std::cout << boardStates.at(i) << std::endl;
-          //if (boardStates.at(i).movableTokens.size() > 0)
-            //states.push_back(Node(boardStates.at(i)));
-        }
-      }
+          visited = false;
+          //if (!data.rejected)
+          //{
+            //// TODO:
+            //// this could be very bad
+            //std::vector<Board> boardStates = data.getNextBoards();
 
-      bool visited;
-      Board data;
-      std::vector<Node> states;
+            //for (unsigned int i = 0; i < boardStates.size(); i++)
+            //{
+            //}
+
+            ////bool allStatesAreRejected = true;
+            ////for (unsigned int i = 0; i < boardStates.size(); i++)
+            ////{
+              ////if (boardStates.at(i).movableTokens.size() > 0)
+              ////{
+                ////allStatesAreRejected = false;
+                ////states.push_back(Node(boardStates.at(i)));
+                ////std::cout << boardStates.at(i) << std::endl;
+              ////}
+              ////else
+                ////boardStates.at(i).rejected = true;
+            ////}
+
+          //}
+        }
+
+        bool visited;
+        Board data;
+        std::vector<Node*> states;
     };
 
   public:
@@ -51,16 +68,71 @@ class Solver
 
     Solver(int boardWidth, int boardHeight)
     {
+      solutionFound = false;
       startingBoard = new Board(boardWidth, boardHeight);
+
       // All possible states from an initial board
       std::vector<Board> initialStates = startingBoard->getNextBoards();
       for (unsigned int i = 0; i < initialStates.size(); i++)
       {
         //std::cout << initialStates.at(i);
-        nodes.push_back(Node(initialStates.at(i)));
+        //nodes.push_back(Node(initialStates.at(i)));
+        addNode(initialStates.at(i));
       }
 
-      std::cout << *startingBoard << std::endl;
+      //std::cout << *startingBoard << std::endl;
+    }
+
+    void searchGoalDF()
+    {
+      // empty the stack
+      while (!searchStack.empty())
+        searchStack.pop();
+
+      for (unsigned int i = 0; i < nodes.size(); i++)
+      {
+        if (!solutionFound)
+        {
+          searchStack.push(&nodes.at(i));
+          depthFirstSearch();
+        }
+      }
+    }
+
+    void depthFirstSearch()
+    {
+      if (solutionFound)
+        return;
+
+      Node *currentNode = searchStack.top();
+      searchStack.pop();
+      currentNode->visited = true;
+
+      std::cout << currentNode->data << std::endl;
+
+      if (currentNode->data.isGoal())
+      {
+        solutionFound = true;
+        std::cout << "FOUND SOLUTION!" << std::endl;
+        return;
+      }
+      else
+      {
+        // generate new states
+        std::vector<Board> boards = currentNode->data.getNextBoards();
+        for (unsigned int i = 0; i < boards.size(); i++)
+        {
+          addNeighborToNode(currentNode, boards.at(i));
+        }
+
+        for (unsigned int i = 0; i < currentNode->states.size(); i++)
+        {
+          searchStack.push(currentNode->states.at(i));
+          depthFirstSearch();
+        }
+      }
+
+      currentNode->visited = false;
     }
 
     ~Solver()
@@ -69,13 +141,35 @@ class Solver
       startingBoard = NULL;
     }
 
-    void fillNode(Node &n)
+    void addNode(Board b)
     {
+      if (!nodeExists(b))
+        nodes.push_back(Node(b));
+    }
+
+    bool nodeExists(const Board &b)
+    {
+      for (unsigned int i = 0; i < nodes.size(); i++)
+        if (nodes.at(i).data == b)
+          return true;
+
+      return false;
+    }
+
+    void addNeighborToNode(Node *n, Board &b)
+    {
+      for (unsigned int i = 0; i < nodes.size(); i++)
+      {
+        if (nodes.at(i).data == b)
+        {
+          n->states.push_back(&nodes.at(i));
+          return;
+        }
+      }
+
       // TODO:
-      // Put this in the node constructor?
-      //n.states = n.data.getNextBoards();
-      //for (unsigned int i = 0; i < n.states.size(); i++)
-        //fillNode(n.states.at(i));
+      // This is probably very wrong
+      n->states.push_back(new Node(b));
     }
 
     friend std::ostream& operator<< (std::ostream& output,
@@ -93,7 +187,8 @@ class Solver
   public:
     Board *startingBoard;
     std::vector<Node> nodes;
-    //Graph<Board> graph;
+    std::stack<Node*> searchStack;
+    bool solutionFound;
 };
 
 #endif

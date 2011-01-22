@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
   scanf("%d, %d", &boardWidth, &boardHeight);
 
   Solver v = Solver(boardWidth, boardHeight);
+  v.searchGoalDF();
 
   //std::cout << v << std::endl;
 

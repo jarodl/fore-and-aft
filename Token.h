@@ -73,24 +73,9 @@ class Token
       neighbors.push_back(t);
     }
 
-    void removeNeighbor(Token t)
-    {
-      for (unsigned int i = 0; i < neighbors.size(); i++)
-        if (*neighbors.at(i) == t)
-          neighbors.erase(neighbors.begin()+i);
-    }
-
     void removeAllNeighbors()
     {
       neighbors.clear();
-    }
-
-    bool isAdjacent(Token t)
-    {
-      for (unsigned int i = 0; i < neighbors.size(); i++)
-        if (*neighbors.at(i) == t)
-          return true;
-      return false;
     }
 
     std::vector<Token*> getNeighbors() const
