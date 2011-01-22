@@ -248,18 +248,10 @@ class Board
     friend std::ostream& operator<< (std::ostream& output,
         const Board& b)
     {
-      // DEBUGGING
-      output << "    ";
-      for (int i = 0; i < b.squares.size(); i++)
-        output << std::setw(7) << i;
-      output << std::endl;
-
       for (unsigned int i = 0; i < b.squares.size(); i++)
       {
-        // DEBUGGING
-        output << std::setw(4) << i;
         for (unsigned int j = 0; j < b.squares[i].size(); j++)
-          output << std::setw(4) << b.squares[j][i].getType() << "(" << b.squares[j][i].getNeighbors().size() << ")";
+          output << std::setw(2) << b.squares[j][i].getType();
         output << std::endl;
       }
         
