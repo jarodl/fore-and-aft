@@ -36,17 +36,20 @@ class Board
   public:
     Board(int w, int h) : squares(h, std::vector<Token>(w))
     {
-      width = w;
-      height = h;
-
+      std::cout << "Called init board" << std::endl;
       resetBoard();
+      determinePossibleMoves();
+    }
+
+    Board(const Board &cpy) : squares(cpy.squares)
+    {
       determinePossibleMoves();
     }
 
     void resetBoard()
     {
-      int xOffset = width/2;
-      int yOffset = height/2;
+      int xOffset = squares.size()/2;
+      int yOffset = squares[0].size()/2;
 
       for (unsigned int x = 0; x < squares.size(); x++)
       {
@@ -73,7 +76,7 @@ class Board
       squares[xOffset][yOffset] = Token(OPEN);
     }
 
-    std::vector<Board> getAllPossibleStates()
+    std::vector<Board> getNextBoards()
     {
       std::vector<Board> generatedBoards;
       // Visits each Token in the movableTokens vector, moves the token and
@@ -87,6 +90,38 @@ class Board
       //
       // The boards generated from this function will be added to the adjency
       // list for *this* board.
+      //unsigned int numOfMovableTokens = movableTokens.size();
+      //for (unsigned int i = 0; i < numOfMovableTokens; i++)
+      while (!movableTokens.empty())
+      {
+        Token *movableToken = movableTokens.top();
+        // The token we are going to move could have more than one possible
+        // location to move to.
+        std::vector<Token*> placesToMove = movableToken->getNeighbors();
+
+        // So generate a board for each possible location to move
+        for (unsigned int j = 0; j < placesToMove.size(); j++)
+        {
+          // TODO:
+          // FUUUU. Since we don't have the location of the two tokens we want
+          // to move it looks like the best option is to move the token, copy
+          // the board and then move it back on the original board
+          //newState.moveToken(*movableToken, placesToMove.at(j));
+          move(*movableToken, *placesToMove.at(j));
+          // Copy the current board
+          Board newState = Board(*this);
+          //TODO:
+          //DEBUG
+          //std::cout << newState << std::endl;
+          generatedBoards.push_back(newState);
+          // move the token back where it was
+          move(*movableToken, *placesToMove.at(j));
+        }
+
+        // Remove the move we are making from the movableTokens stack so we
+        // don't assume we can make that move in the next state.
+        movableTokens.pop();
+      }
 
       return generatedBoards;
     }
@@ -114,15 +149,16 @@ class Board
     void updateMovesForToken(int x, int y)
     {
       Token *t = &squares[x][y];
+      t->removeAllNeighbors();
 
       if (t->getType() == UPPER_LEFT)
       {
         for (int i = 1; i <= 2; i++)
         {
           if (canMove(t, x, y, x + i, y))
-            t->addNeighbor(squares[x + i][y]);
+            t->addNeighbor(&squares[x + i][y]);
           if (canMove(t, x, y, x, y + i))
-            t->addNeighbor(squares[x][y + i]);
+            t->addNeighbor(&squares[x][y + i]);
         }
       }
       else if (t->getType() == LOWER_RIGHT)
@@ -130,9 +166,9 @@ class Board
         for (int i = 1; i <= 2; i++)
         {
           if (canMove(t, x, y, x - i, y))
-            t->addNeighbor(squares[x - i][y]);
+            t->addNeighbor(&squares[x - i][y]);
           if (canMove(t, x, y, x, y - i))
-            t->addNeighbor(squares[x][y - i]);
+            t->addNeighbor(&squares[x][y - i]);
         }
       }
     }
@@ -147,23 +183,42 @@ class Board
     void testMove()
     {
       move(squares[2][1], squares[2][2]);
-      move(squares[2][0], squares[2][1]);
+      determinePossibleMoves();
+      //move(squares[2][0], squares[2][1]);
+      //determinePossibleMoves();
     }
 
     bool canMove(const Token *token, int fromX, int fromY, int toX, int toY)
     {
       bool canMove = false;
       // check if (x, y) is out of reach or out of the bounds of the board.
+
+      // check if the token is moving the wrong direction
+      switch(token->getType())
+      {
+        case UPPER_LEFT:
+          if (fromX - toX > 0 || fromY - toY > 0)
+            return false;
+          break;
+        case LOWER_RIGHT:
+          if (fromX - toX < 0 || fromY - toY < 0)
+            return false;
+          break;
+      }
+
       int xDist = abs(fromX - toX);
       int yDist = abs(fromY - toY);
 
       if (((xDist == 1) != (yDist == 1) ||
           (xDist == 2) != (yDist == 2)) &&
-          (toX > 0 && toY > 0 && toX < width - 1 && toY < height - 1))
+          (toX >= 0 && toY >= 0 && toX < squares.size() && toY < squares[toX].size()) &&
+          (squares[toX][toY] == OPEN))
       {
         // moving the token one away so the spot has to be open
-        if ((xDist == 1 || yDist == 1) && (squares[toX][toY] == OPEN))
+        if (xDist == 1 || yDist == 1)
+        {
           canMove = true;
+        }
         else
         {
           switch(token->getType())
@@ -171,13 +226,13 @@ class Board
             case UPPER_LEFT:
               // the token is jumping over another token so the token underneath
               // the jump has to be the opposite type
-              if (((xDist == 2) && (squares[toX-1][toY] == LOWER_RIGHT)) ||
-                  ((yDist == 2) && (squares[toX][toY-1] == LOWER_RIGHT)))
+              if (((xDist == 2) && (squares[fromX+1][fromY] == LOWER_RIGHT)) ||
+                  ((yDist == 2) && (squares[fromX][fromY+1] == LOWER_RIGHT)))
                 canMove = true;
               break;
             case LOWER_RIGHT:
-              if (((xDist == 2) && (squares[toX+1][toY] == UPPER_LEFT)) ||
-                  ((yDist == 2) && (squares[toX][toY+1] == UPPER_LEFT)))
+              if (((xDist == 2) && (squares[fromX-1][fromY] == UPPER_LEFT)) ||
+                  ((yDist == 2) && (squares[fromX][fromY-1] == UPPER_LEFT)))
                 canMove = true;
               break;
             default:
@@ -187,52 +242,54 @@ class Board
           }
         }
       }
-      else
-        std::cerr << "Warning: attempting to move outside of the game board or diagonally." << std::endl;
+      //else
+        //std::cerr << "Warning: attempting to move outside of the game board or diagonally." << std::endl;
 
       return canMove;
     }
 
-    void testCanMove()
-    {
+    //void testCanMove()
+    //{
       //std::cout << "Should be false: " << std::endl;
       //Token *t = &squares[0][0];
-      //std::cout << "Can move (0, 0) to (-1, -1): " << canMove(t, 0, 0) << std::endl;
-      //std::cout << "Can move (0, 0) to (1, 1): " << canMove(t, 1, 1) << std::endl;
+      //std::cout << "Can move (0, 0) to (-1, -1): " << canMove(t, 0, 0, -1, -1) << std::endl;
+      //std::cout << "Can move (0, 0) to (1, 1): " << canMove(t, 0, 0, 1, 1) << std::endl;
       //t = &squares[2][0];
-      //std::cout << "Can move (2, 0) to (3, 0): " << canMove(t, 3, 0) << std::endl;
+      //std::cout << "Can move (2, 0) to (3, 0): " << canMove(t, 2, 0, 3, 0) << std::endl;
       //t = &squares[2][2];
-      //std::cout << "Can move (2, 2) to (3, 3): " << canMove(t, 3, 3) << std::endl;
+      //std::cout << "Can move (2, 2) to (3, 3): " << canMove(t, 2, 2, 3, 3) << std::endl;
       //t = &squares[4][4];
-      //std::cout << "Can move (4, 4) to (3, 3): " << canMove(t, 3, 3) << std::endl;
-      //std::cout << "Can move (4, 4) to (3, 2): " << canMove(t, 3, 2) << std::endl;
+      //std::cout << "Can move (4, 4) to (3, 3): " << canMove(t, 4, 4, 3, 3) << std::endl;
+      //std::cout << "Can move (4, 4) to (3, 2): " << canMove(t, 4, 4, 3, 2) << std::endl;
       //t = &squares[2][4];
-      //std::cout << "Can move (2, 4) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      //std::cout << "Can move (2, 4) to (2, 2): " << canMove(t, 2, 4, 2, 2) << std::endl;
       //std::cout << std::endl;
 
       //std::cout << "Should be true: " << std::endl;
       //t = &squares[1][2];
-      //std::cout << "Can move (1, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      //std::cout << "Can move (1, 2) to (2, 2): " << canMove(t, 1, 2, 2, 2) << std::endl;
       //t = &squares[3][2];
-      //std::cout << "Can move (3, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
-      //std::cout << "Can move (4, 2) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      //std::cout << "Can move (3, 2) to (2, 2): " << canMove(t, 3, 2, 2, 2) << std::endl;
+      //t = &squares[4][2];
+      //std::cout << "Can move (4, 2) to (2, 2): " << canMove(t, 4, 2, 2, 2) << std::endl;
       //t = &squares[2][3];
-      //std::cout << "Can move (2, 3) to (2, 2): " << canMove(t, 2, 2) << std::endl;
+      //std::cout << "Can move (2, 3) to (2, 2): " << canMove(t, 2, 3, 2, 2) << std::endl;
       //std::cout << std::endl;
 
       //std::cout << "Should display a warning: " << std::endl;
-      //canMove(t, -1, -1);
-      //t = &squares[4][0];
-      //canMove(t, 4, 1);
+      //t = &squares[0][0];
+      //canMove(t, 0, 0, -1, -1);
+      //t = &squares[4][1];
+      //canMove(t, 4, 1, 5, 5);
       //std::cout << std::endl;
-    }
+    //}
 
     friend std::ostream& operator<< (std::ostream& output,
         const Board& b)
     {
       // DEBUGGING
       output << "    ";
-      for (int i = 0; i < b.width; i++)
+      for (int i = 0; i < b.squares.size(); i++)
         output << std::setw(7) << i;
       output << std::endl;
 
@@ -248,11 +305,8 @@ class Board
       return output;
     }
     
-  private:
-    int height;
-    int width;
   public:
-    std::stack< Token* > movableTokens;
+    std::stack<Token*> movableTokens;
     std::vector< std::vector<Token> > squares;
 };
 

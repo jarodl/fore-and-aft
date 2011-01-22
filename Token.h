@@ -25,9 +25,7 @@
 class Token
 {
   public:
-    Token()
-    {
-    }
+    Token() { }
 
     Token(char t)
     {
@@ -55,6 +53,11 @@ class Token
       return (type == t.getType());
     }
 
+    bool operator!=(const Token t) const
+    {
+      return (type != t.getType());
+    }
+
     bool operator==(const char t) const
     {
       return type == t;
@@ -65,7 +68,7 @@ class Token
       return type != t;
     }
 
-    void addNeighbor(Token t)
+    void addNeighbor(Token *t)
     {
       neighbors.push_back(t);
     }
@@ -73,7 +76,7 @@ class Token
     void removeNeighbor(Token t)
     {
       for (unsigned int i = 0; i < neighbors.size(); i++)
-        if (neighbors.at(i) == t)
+        if (*neighbors.at(i) == t)
           neighbors.erase(neighbors.begin()+i);
     }
 
@@ -85,19 +88,19 @@ class Token
     bool isAdjacent(Token t)
     {
       for (unsigned int i = 0; i < neighbors.size(); i++)
-        if (neighbors.at(i) == t)
+        if (*neighbors.at(i) == t)
           return true;
       return false;
     }
 
-    std::vector<Token> getNeighbors() const
+    std::vector<Token*> getNeighbors() const
     {
       return neighbors;
     }
 
   private:
     char type;
-    std::vector< Token > neighbors;
+    std::vector<Token*> neighbors;
 };
 
 #endif
