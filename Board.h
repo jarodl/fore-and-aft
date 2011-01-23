@@ -34,6 +34,10 @@
 class Board
 {
   public:
+    Board()
+    {
+    }
+
     Board(int w, int h) : squares(h, std::vector<Token>(w))
     {
       resetBoard(UPPER_LEFT, LOWER_RIGHT);
@@ -75,6 +79,31 @@ class Board
       squares[xOffset][yOffset] = Token(OPEN);
     }
 
+    Board getNextBoard()
+    {
+      Token *movableToken = movableTokens.top();
+      // The token we are going to move could have more than one possible
+      // location to move to.
+      std::vector<Token*> placesToMove = movableToken->getNeighbors();
+
+      // So generate a board for each possible location to move
+      // TODO:
+      // FUUUU. Since we don't have the location of the two tokens we
+      // want to move it looks like the best option is to move the token,
+      // copy the board and then move it back on the original board
+      move(*movableToken, *placesToMove.at(0));
+      // Copy the current board
+      Board newBoard = Board(*this);
+      // move the token back where it was
+      move(*movableToken, *placesToMove.at(0));
+
+      // Remove the move we are making from the movableTokens stack so we
+      // don't assume we can make that move in the next state.
+      movableTokens.pop();
+
+      return newBoard;
+    }
+
     std::vector<Board> getNextBoards()
     {
       std::vector<Board> generatedBoards;
@@ -89,45 +118,14 @@ class Board
       //
       // The boards generated from this function will be added to the adjency
       // list for *this* board.
-      //unsigned int numOfMovableTokens = movableTokens.size();
-      //for (unsigned int i = 0; i < numOfMovableTokens; i++)
       while (!movableTokens.empty())
-      {
-        Token *movableToken = movableTokens.top();
-        // The token we are going to move could have more than one possible
-        // location to move to.
-        std::vector<Token*> placesToMove = movableToken->getNeighbors();
-
-        // So generate a board for each possible location to move
-        for (unsigned int j = 0; j < placesToMove.size(); j++)
-        {
-          // TODO:
-          // FUUUU. Since we don't have the location of the two tokens we want
-          // to move it looks like the best option is to move the token, copy
-          // the board and then move it back on the original board
-          //newState.moveToken(*movableToken, placesToMove.at(j));
-          move(*movableToken, *placesToMove.at(j));
-          // Copy the current board
-          Board newState = Board(*this);
-          //TODO:
-          //DEBUG
-          //std::cout << newState << std::endl;
-          generatedBoards.push_back(newState);
-          // move the token back where it was
-          move(*movableToken, *placesToMove.at(j));
-        }
-
-        // Remove the move we are making from the movableTokens stack so we
-        // don't assume we can make that move in the next state.
-        movableTokens.pop();
-      }
+        generatedBoards.push_back(getNextBoard());
 
       return generatedBoards;
     }
 
     void determinePossibleMoves()
     {
-
       // TODO:
       // This function can run significantly faster by only checking the
       // locations of the two tokens that were swapped.
@@ -245,8 +243,7 @@ class Board
       return canMove;
     }
 
-    friend std::ostream& operator<< (std::ostream& output,
-        const Board& b)
+    friend std::ostream& operator<< (std::ostream& output, const Board& b)
     {
       for (unsigned int i = 0; i < b.squares.size(); i++)
       {

@@ -20,7 +20,6 @@
 #define SOLVER_H
 
 #include "Board.h"
-#include <queue>
 
 class Solver
 {
@@ -50,40 +49,57 @@ class Solver
 
     void searchGoalDF()
     {
-      // empty the stack
-      while (!searchStack.empty())
-        searchStack.pop();
+      std::stack<Node*> openNodes;
+      std::stack<Node*> closedNodes;
+      bool solution = false;
 
       for (unsigned int i = 0; i < nodes.size(); i++)
       {
-        if (!solutionFound)
+        openNodes.push(&nodes.at(i));
+      }
+
+      while (!openNodes.empty())
+      {
+        Node *currentNode = openNodes.top();
+        openNodes.pop();
+
+        if (currentNode->data.isGoal())
         {
-          searchStack.push(&nodes.at(i));
-          depthFirstSearch();
+          closedNodes.push(currentNode);
+          solution = true;
         }
+        else
+        {
+          std::vector<Board> boards = currentNode->data.getNextBoards();
+
+          for(unsigned int i = 0; i < boards.size(); i++)
+            addNeighborToNode(currentNode, boards.at(i));
+
+          for (unsigned int i = 0; i < currentNode->states.size(); i++)
+          {
+            openNodes.push(currentNode->states.at(i));
+          }
+
+          closedNodes.push(currentNode);
+        }
+
+        if (solution)
+          break;
+
+      }
+
+      int size = 1;
+      while(!closedNodes.empty())
+      {
+        std::cout << "Step " << size << std::endl;
+        std::cout << closedNodes.top()->data << std::endl;
+        closedNodes.pop();
+        size++;
       }
     }
 
     void searchGoalBF()
     {
-      std::queue<Node*> q = std::queue<Node*>();
-
-      Node *currentNode;
-      for (unsigned int i = 0; i < nodes.size(); i++)
-      {
-        currentNode = &nodes.at(i);
-        q.push(currentNode);
-
-        while (!q.empty())
-        {
-          Node *temp = q.front();
-          q.pop();
-
-          if (temp->data.isGoal())
-          {
-          }
-        }
-      }
     }
 
     void depthFirstSearch()
@@ -95,19 +111,15 @@ class Solver
       searchStack.pop();
       currentNode->visited = true;
 
-
       if (currentNode->data.isGoal())
       {
         solutionFound = true;
-        return;
       }
       else
       {
         // generate new states
-        // TODO:
-        // Only generate one state here so we don't generate states we end up
-        // not using
         std::vector<Board> boards = currentNode->data.getNextBoards();
+
         for (unsigned int i = 0; i < boards.size(); i++)
           addNeighborToNode(currentNode, boards.at(i));
 
@@ -116,15 +128,9 @@ class Solver
           searchStack.push(currentNode->states.at(i));
           depthFirstSearch();
         }
-      }
 
-      while (!searchStack.empty())
-      {
-        std::cout << searchStack.top()->data << std::endl;
-        searchStack.pop();
+        //currentNode->visited = false;
       }
-
-      currentNode->visited = false;
     }
 
     ~Solver()
@@ -162,8 +168,7 @@ class Solver
       n->states.push_back(new Node(b));
     }
 
-    friend std::ostream& operator<< (std::ostream& output,
-        const Solver& s)
+    friend std::ostream& operator<< (std::ostream& output, const Solver& s)
     {
       // output all boards
       for (unsigned int i = 0; i < s.nodes.size(); i++)
