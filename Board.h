@@ -151,39 +151,6 @@ class Board
         pieceMoves.push(translate(x, y - 2));
     }
 
-    void updatePossibleMovesFrom(int index)
-    {
-      int y = toY(index);
-      int x = toX(index, y);
-
-      if (pieces[index] == UPPER_LEFT)
-      {
-        if ((x + 1 < width) && pieces[translate(x + 1, y)] == OPEN)
-          pieceMoves.push(translate(x + 1, y));
-        else if ((x + 2 < width) && pieces[translate(x + 1, y)] == LOWER_RIGHT
-              && pieces[x + 2] == OPEN)
-          pieceMoves.push(translate(x + 2, y));
-        else if ((y + 1 < height) && pieces[translate(x, y + 1)] == OPEN)
-          pieceMoves.push(translate(x, y + 1));
-        else if ((y + 2 < height) && pieces[translate(x, y + 1)] == LOWER_RIGHT &&
-            pieces[translate(x, y + 2)] == OPEN)
-          pieceMoves.push(translate(x, y + 2));
-      }
-      else if (pieces[index] == LOWER_RIGHT)
-      {
-        if ((x - 1 >= 0) && pieces[translate(x - 1, y)] == OPEN)
-          pieceMoves.push(translate(x - 1, y));
-        else if ((x - 2 >= 0) && pieces[translate(x - 1, y) == UPPER_LEFT &&
-            pieces[translate(x - 2, y)]] == OPEN)
-          pieceMoves.push(translate(x - 2, y));
-        else if ((y - 1 >= 0) && pieces[translate(x, y - 1)] == OPEN)
-          pieceMoves.push(translate(x, y - 1));
-        else if ((y - 2 >= 0) && pieces[translate(x, y - 1)] == UPPER_LEFT &&
-            pieces[translate(x, y - 2)] == OPEN)
-          pieceMoves.push(translate(x, y - 2));
-      }
-    }
-
     friend std::ostream& operator<< (std::ostream& output, const Board& b)
     {
       for (int i = 0; i < b.getWidth(); i++)
