@@ -19,12 +19,11 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <iomanip>
+#include <iostream>
+#include <string>
 #include <vector>
 #include <stack>
-#include <iomanip>
-#include "Token.h"
-
-#include <iostream>
 
 #define UPPER_LEFT 'R'
 #define LOWER_RIGHT 'B'
@@ -38,249 +37,246 @@ class Board
     {
     }
 
-    Board(int w, int h) : squares(h, std::vector<Token>(w))
+    Board(int w, int h)
     {
-      resetBoard(UPPER_LEFT, LOWER_RIGHT);
-      determinePossibleMoves();
+      width = w;
+      height = h;
+      pieces = "";
+      pieces.resize(w * h);
+
+      clearBoard(UPPER_LEFT, LOWER_RIGHT);
+      openLocation = pieces.size()/2;
+      updatePossibleMovesAroundOpen(openLocation);
     }
 
-    Board(const Board &cpy) : squares(cpy.squares)
+    Board(const Board &cpy)
     {
-      determinePossibleMoves();
+      width = cpy.getWidth();
+      height = cpy.getHeight();
+      pieces = cpy.getPieces();
+      openLocation = cpy.getOpenLocation();
+      pieceMoves = cpy.getPieceMoves();
     }
 
-    void resetBoard(char upperLeft, char lowerRight)
+    ~Board()
     {
-      int xOffset = squares.size()/2;
-      int yOffset = squares[0].size()/2;
+    }
 
-      for (unsigned int x = 0; x < squares.size(); x++)
+    void clearBoard(char upperLeft, char lowerRight)
+    {
+      int boardSize = pieces.size();
+      int offset = (boardSize/width) - width/2 - 1;
+
+      for (int i = 0; i < width; i++)
       {
-        for (unsigned int y = 0; y < squares[x].size(); y++)
+        for (int j = 0; j < height; j++)
         {
-          if ((x < squares.size() - xOffset ) &&
-              (y < squares[x].size() - yOffset))
-          {
-            squares[x][y] = Token(upperLeft);
-          }
-          else if (((int)x >= xOffset) && ((int)y >= yOffset))
-          {
-            squares[x][y] = Token(lowerRight);
-          }
-          // Invalid move
+          int index = translate(i, j);
+          if (i < width - offset && j < height - offset)
+            pieces[index] = upperLeft;
+          else if (i >= offset && j >= offset)
+            pieces[index] = lowerRight;
           else
-          {
-            squares[x][y] = Token(INVALID);
-          }
+            pieces[index] = INVALID;
         }
       }
 
-      // Set center to open
-      squares[xOffset][yOffset] = Token(OPEN);
+      pieces[boardSize/2] = OPEN;
     }
 
     Board getNextBoard()
     {
-      Token *movableToken = movableTokens.top();
-      // The token we are going to move could have more than one possible
-      // location to move to.
-      std::vector<Token*> placesToMove = movableToken->getNeighbors();
+      int from = pieceMoves.top();
+      pieceMoves.pop();
 
-      // So generate a board for each possible location to move
-      // TODO:
-      // FUUUU. Since we don't have the location of the two tokens we
-      // want to move it looks like the best option is to move the token,
-      // copy the board and then move it back on the original board
-      move(*movableToken, *placesToMove.at(0));
-      // Copy the current board
       Board newBoard = Board(*this);
-      // move the token back where it was
-      move(*movableToken, *placesToMove.at(0));
-
-      // Remove the move we are making from the movableTokens stack so we
-      // don't assume we can make that move in the next state.
-      movableTokens.pop();
+      newBoard.move(from, openLocation);
 
       return newBoard;
     }
 
-    std::vector<Board> getNextBoards()
+    std::vector<Board> getEveryNextBoard()
     {
-      std::vector<Board> generatedBoards;
-      // Visits each Token in the movableTokens vector, moves the token and
-      // copies that state.
-      //
-      // For each token visited the board generated from moving it will be added
-      // to the returned vector in this function.
-      //
-      // If the graph keeps calling this on every generated board then all
-      // possible moves will be added to the graph.
-      //
-      // The boards generated from this function will be added to the adjency
-      // list for *this* board.
-      while (!movableTokens.empty())
-        generatedBoards.push_back(getNextBoard());
+      std::vector<Board> everyBoard;
 
-      return generatedBoards;
+      while (!pieceMoves.empty())
+        everyBoard.push_back(getNextBoard());
+
+      return everyBoard;
     }
 
-    void determinePossibleMoves()
+    void move(int from, int to)
     {
-      // TODO:
-      // This function can run significantly faster by only checking the
-      // locations of the two tokens that were swapped.
-      // DO IT!
+      // update the character
+      char tmp = pieces[from];
+      pieces[from] = pieces[to];
+      pieces[to] = tmp;
 
-      // Clear the stack of tokens since the possible moves have changed.
-      while (!movableTokens.empty())
-        movableTokens.pop();
-
-      for (unsigned int x = 0; x < squares.size(); x++)
-      {
-        for (unsigned int y = 0; y < squares[x].size(); y++)
-        {
-          updateMovesForToken(x, y);
-
-          Token *t = &squares[x][y];
-          // Keep track of tokens that can be moved to another state
-          if (t->getNeighbors().size() > 0)
-            movableTokens.push(t);
-        }
-      }
+      openLocation = (pieces[to] == OPEN) ? to : from;
+      clearMoves();
+      updatePossibleMovesAroundOpen(openLocation);
     }
 
-    void updateMovesForToken(int x, int y)
+    void updatePossibleMovesAroundOpen(int index)
     {
-      Token *t = &squares[x][y];
-      t->removeAllNeighbors();
+      int y = toY(index);
+      int x = toX(index, y);
 
-      if (t->getType() == UPPER_LEFT)
-      {
-        for (int i = 1; i <= 2; i++)
-        {
-          if (canMove(t, x, y, x + i, y))
-            t->addNeighbor(&squares[x + i][y]);
-          else if (canMove(t, x, y, x, y + i))
-            t->addNeighbor(&squares[x][y + i]);
-        }
-      }
-      else if (t->getType() == LOWER_RIGHT)
-      {
-        for (int i = 1; i <= 2; i++)
-        {
-          if (canMove(t, x, y, x - i, y))
-            t->addNeighbor(&squares[x - i][y]);
-          else if (canMove(t, x, y, x, y - i))
-            t->addNeighbor(&squares[x][y - i]);
-        }
-      }
+      if (x + 1 < width && pieces[translate(x + 1, y)] == LOWER_RIGHT)
+        pieceMoves.push(translate(x + 1, y));
+
+      if (x + 2 < width && pieces[translate(x + 2, y)] == LOWER_RIGHT &&
+          pieces[translate(x + 1, y)] == UPPER_LEFT)
+        pieceMoves.push(translate(x + 2, y));
+
+      if (x - 1 >= 0 && pieces[translate(x - 1, y)] == UPPER_LEFT)
+        pieceMoves.push(translate(x - 1, y));
+
+      if (x - 2 >= 0 && pieces[translate(x - 2, y)] == UPPER_LEFT &&
+          pieces[translate(x - 1, y)] == LOWER_RIGHT)
+        pieceMoves.push(translate(x - 2, y));
+
+      if (y + 1 < height && pieces[translate(x, y + 1)] == LOWER_RIGHT)
+        pieceMoves.push(translate(x, y + 1));
+
+      if (y - 1 >= 0 && pieces[translate(x, y - 1)] == UPPER_LEFT)
+        pieceMoves.push(translate(x, y - 1));
+
+      if (y + 2 < height && pieces[translate(x, y + 2)] == LOWER_RIGHT &&
+          pieces[translate(x, y + 1)] == UPPER_LEFT)
+        pieceMoves.push(translate(x, y + 2));
+
+      if (y - 2 >= 0 && pieces[translate(x, y - 2)] == UPPER_LEFT &&
+          pieces[translate(x, y - 1)] == LOWER_RIGHT)
+        pieceMoves.push(translate(x, y - 2));
     }
 
-    void move(Token &one, Token &two)
+    void updatePossibleMovesFrom(int index)
     {
-      Token copy = one;
-      one = two;
-      two = copy;
-    }
+      int y = toY(index);
+      int x = toX(index, y);
 
-    bool canMove(const Token *token, int fromX, int fromY, int toX, int toY)
-    {
-      bool canMove = false;
-      // check if (x, y) is out of reach or out of the bounds of the board.
-
-      // check if the token is moving the wrong direction
-      switch(token->getType())
+      if (pieces[index] == UPPER_LEFT)
       {
-        case UPPER_LEFT:
-          if (fromX - toX > 0 || fromY - toY > 0)
-            return false;
-          break;
-        case LOWER_RIGHT:
-          if (fromX - toX < 0 || fromY - toY < 0)
-            return false;
-          break;
+        if ((x + 1 < width) && pieces[translate(x + 1, y)] == OPEN)
+          pieceMoves.push(translate(x + 1, y));
+        else if ((x + 2 < width) && pieces[translate(x + 1, y)] == LOWER_RIGHT
+              && pieces[x + 2] == OPEN)
+          pieceMoves.push(translate(x + 2, y));
+        else if ((y + 1 < height) && pieces[translate(x, y + 1)] == OPEN)
+          pieceMoves.push(translate(x, y + 1));
+        else if ((y + 2 < height) && pieces[translate(x, y + 1)] == LOWER_RIGHT &&
+            pieces[translate(x, y + 2)] == OPEN)
+          pieceMoves.push(translate(x, y + 2));
       }
-
-      int xDist = abs(fromX - toX);
-      int yDist = abs(fromY - toY);
-
-      if (((xDist == 1) != (yDist == 1) ||
-          (xDist == 2) != (yDist == 2)) &&
-          (toX >= 0 && toY >= 0 && toX < squares.size() && toY < squares[toX].size()) &&
-          (squares[toX][toY] == OPEN))
+      else if (pieces[index] == LOWER_RIGHT)
       {
-        // moving the token one away so the spot has to be open
-        if (xDist == 1 || yDist == 1)
-        {
-          canMove = true;
-        }
-        else
-        {
-          switch(token->getType())
-          {
-            case UPPER_LEFT:
-              // the token is jumping over another token so the token underneath
-              // the jump has to be the opposite type
-              if (((xDist == 2) && (squares[fromX+1][fromY] == LOWER_RIGHT)) ||
-                  ((yDist == 2) && (squares[fromX][fromY+1] == LOWER_RIGHT)))
-                canMove = true;
-              break;
-            case LOWER_RIGHT:
-              if (((xDist == 2) && (squares[fromX-1][fromY] == UPPER_LEFT)) ||
-                  ((yDist == 2) && (squares[fromX][fromY-1] == UPPER_LEFT)))
-                canMove = true;
-              break;
-            default:
-              std::cerr << "Warning: attempting to move an invalid game token." << std::endl;
-              canMove = false;
-              break;
-          }
-        }
+        if ((x - 1 >= 0) && pieces[translate(x - 1, y)] == OPEN)
+          pieceMoves.push(translate(x - 1, y));
+        else if ((x - 2 >= 0) && pieces[translate(x - 1, y) == UPPER_LEFT &&
+            pieces[translate(x - 2, y)]] == OPEN)
+          pieceMoves.push(translate(x - 2, y));
+        else if ((y - 1 >= 0) && pieces[translate(x, y - 1)] == OPEN)
+          pieceMoves.push(translate(x, y - 1));
+        else if ((y - 2 >= 0) && pieces[translate(x, y - 1)] == UPPER_LEFT &&
+            pieces[translate(x, y - 2)] == OPEN)
+          pieceMoves.push(translate(x, y - 2));
       }
-      //else
-        //std::cerr << "Warning: attempting to move outside of the game board or diagonally." << std::endl;
-
-      return canMove;
     }
 
     friend std::ostream& operator<< (std::ostream& output, const Board& b)
     {
-      for (unsigned int i = 0; i < b.squares.size(); i++)
+      for (int i = 0; i < b.getWidth(); i++)
       {
-        for (unsigned int j = 0; j < b.squares[i].size(); j++)
-          output << std::setw(2) << b.squares[j][i].getType();
+        for (int j = 0; j < b.getHeight(); j++)
+          output << std::setw(2) << b[b.translate(j, i)];
         output << std::endl;
       }
         
       return output;
     }
 
-    bool isGoal()
+    void clearMoves()
     {
-      Board *goalKey = new Board(squares.size(), squares.size());
-      goalKey->resetBoard(LOWER_RIGHT, UPPER_LEFT);
-
-      return (*goalKey == *this);
+      while (!pieceMoves.empty())
+        pieceMoves.pop();
     }
 
-    bool operator==(const Board b)
+    char operator[](const int index) const
     {
-      for (unsigned int x = 0; x < squares.size(); x++)
-        for (unsigned int y = 0; y < squares[x].size(); y++)
-          if (b.squares[x][y] != squares[x][y])
-            return false;
-
-      return true;
+      return pieces[index];
     }
 
-    bool operator!=(const Board b)
+    bool operator==(const Board &otherBoard)
     {
-      return !(*this == b);
+      return (pieces == otherBoard.getPieces());
     }
-    
-  public:
-    std::stack<Token*> movableTokens;
-    std::vector< std::vector<Token> > squares;
+
+    bool operator!=(const Board &otherBoard)
+    {
+      return (*this != otherBoard);
+    }
+
+    bool operator==(const std::string &otherBoard)
+    {
+      return (pieces == otherBoard);
+    }
+
+    bool operator!=(const std::string &otherBoard)
+    {
+      return (*this != otherBoard);
+    }
+
+    bool movesExist() const
+    {
+      return (!pieceMoves.empty());
+    }
+
+    int getWidth() const
+    {
+      return width;
+    }
+
+    int getHeight() const
+    {
+      return height;
+    }
+
+    int translate(int x, int y) const
+    {
+      return (x + (y * width));
+    }
+
+    int toX(int index, int y) const
+    {
+      return index - (y * width);
+    }
+
+    int toY(int index) const
+    {
+      return index/width;
+    }
+
+    int getOpenLocation() const
+    {
+      return openLocation;
+    }
+
+    std::string getPieces() const
+    {
+      return pieces;
+    }
+
+    std::stack<int> getPieceMoves() const
+    {
+      return pieceMoves;
+    }
+
+  private:
+    int width, height;
+    std::string pieces;
+    std::stack<int> pieceMoves;
+    int openLocation;
 };
 
 #endif

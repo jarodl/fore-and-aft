@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include "Solver.h"
+#include "Board.h"
 
 int main(int argc, char* argv[])
 {
@@ -25,6 +26,12 @@ int main(int argc, char* argv[])
   printf("Enter the size of the board in the format (w, h): ");
   scanf("%d, %d", &boardWidth, &boardHeight);
 
+  //Board b = Board(boardWidth, boardHeight);
+  //std::cout << b << std::endl;
+  //b.move(13, 12);
+  //std::cout << b << std::endl;
+  //b.move(18, 13);
+  //std::cout << b << std::endl;
   Solver v = Solver(boardWidth, boardHeight);
   v.searchGoalDF();
 
