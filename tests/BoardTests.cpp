@@ -1,8 +1,7 @@
-#include "../include/Board.h"
+#include "Board.h"
 
 #include "CppUTest/TestHarness.h"
-/* Include the simple string extensions if you're using std::string */
-//#include "CppUTest/Extensions/SimpleStringExtensions.h"
+#include "CppUTest/Extensions/SimpleStringExtensions.h"
 
 TEST_GROUP(Board)
 {
