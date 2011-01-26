@@ -31,6 +31,13 @@ class Solver
         visited = false;
       }
 
+      ~Node()
+      {
+        std::vector<Node*>::iterator it;
+        for (it = states.begin(); it < states.end(); it++)
+          delete *it;
+      }
+
       bool visited;
       Board data;
       std::vector<Node*> states;
@@ -65,10 +72,15 @@ class Solver
         Node *currentNode = openNodes.top();
         openNodes.pop();
 
+        //std::cout << currentNode->data << std::endl;
+
         if (goalWasFound(currentNode->data))
         {
           closedNodes.push(currentNode);
           solution = true;
+
+          std::cout << "Solution Found!" << std::endl;
+          std::cout << currentNode->data << std::endl;
         }
         else if (currentNode->data.movesExist())
         {
@@ -98,37 +110,6 @@ class Solver
 
     void searchGoalBF()
     {
-    }
-
-    void depthFirstSearch()
-    {
-      if (solutionFound)
-        return;
-
-      Node *currentNode = searchStack.top();
-      searchStack.pop();
-      currentNode->visited = true;
-
-      if (goalWasFound(currentNode->data))
-      {
-        solutionFound = true;
-      }
-      else
-      {
-        // generate new states
-        std::vector<Board> boards = currentNode->data.getEveryNextBoard();
-
-        for (unsigned int i = 0; i < boards.size(); i++)
-          addNeighborToNode(currentNode, boards.at(i));
-
-        for (unsigned int i = 0; i < currentNode->states.size(); i++)
-        {
-          searchStack.push(currentNode->states.at(i));
-          depthFirstSearch();
-        }
-
-        //currentNode->visited = false;
-      }
     }
 
     ~Solver()
@@ -187,7 +168,6 @@ class Solver
 
   public:
     std::vector<Node> nodes;
-    std::stack<Node*> searchStack;
     std::string goal;
     bool solutionFound;
 };

@@ -1,10 +1,12 @@
 CC = g++
 CFLAGS = -c -Wall
-SOURCES = main.cpp Board.h
+SOURCES = src/*
+INCLUDE = include/*
+
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = fore-and-aft
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(INCLUDE) $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@
