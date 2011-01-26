@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -c -Wall
-SOURCES = AllTests.cpp BoardTests.cpp SolverTests.cpp
+SOURCES = AllTests.cpp BoardTests.cpp SolverTests.cpp PiecesTests.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 OBJECTS_DIR = $(addprefix objs/, $(OBJECTS))

@@ -5,16 +5,18 @@
 
 TEST_GROUP(Board)
 {
-  Board* example;
+  Board* board;
 
   void setup()
   {
-    example = new Board();
+    int boardWidth = 5;
+    int boardHeight = 5;
+    board = new Board();
   }
 
   void teardown()
   {
-    delete example;
+    delete board;
   }
 };
 

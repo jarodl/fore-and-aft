@@ -5,16 +5,16 @@
 
 TEST_GROUP(Solver)
 {
-  Solver* example;
+  Solver* solver;
 
   void setup()
   {
-    example = new Solver();
+    solver = new Solver();
   }
 
   void teardown()
   {
-    delete example;
+    delete solver;
   }
 };
 
