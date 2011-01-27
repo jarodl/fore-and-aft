@@ -11,7 +11,7 @@ TEST_GROUP(Board)
   {
     int boardWidth = 5;
     int boardHeight = 5;
-    board = new Board();
+    board = new Board(boardWidth, boardHeight);
   }
 
   void teardown()
