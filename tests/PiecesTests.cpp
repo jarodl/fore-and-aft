@@ -41,31 +41,6 @@ TEST_GROUP(InitPieces)
   }
 };
 
-TEST_GROUP(FirstMovePieces)
-{
-  Pieces* fiveByFive;
-  Pieces* sevBySev;
-  Pieces* ninByNin;
-
-  void setup()
-  {
-    fiveByFive = new Pieces(5, 5);
-    sevBySev = new Pieces(7, 7);
-    ninByNin = new Pieces(9, 9);
-
-    fiveByFive->makeNextMove();
-    sevBySev->makeNextMove();
-    ninByNin->makeNextMove();
-  }
-
-  void teardown()
-  {
-    delete fiveByFive;
-    delete sevBySev;
-    delete ninByNin;
-  }
-};
-
 TEST(InitPieces, testPiecesStringSize)
 {
   CHECK_EQUAL(17, fiveByFive->getSize());
@@ -83,7 +58,7 @@ TEST(InitPieces, testPiecesClearsValues)
   STRCMP_EQUAL(ninExpected, ninByNin->getValues().c_str());
 }
 
-TEST(InitPieces, testPiecesMovesDoNotExist)
+TEST(InitPieces, testPiecesMovesExist)
 {
   CHECK_EQUAL(true, fiveByFive->movesExist());
   CHECK_EQUAL(true, sevBySev->movesExist());
@@ -109,6 +84,38 @@ TEST(InitPieces, testPiecesParams)
   STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
 }
 
+TEST(InitPieces, testGetCopyAndMakeMove)
+{
+  Pieces cpy = fiveByFive->getCopyAndMakeNextMove();
+  char cpyExpected[] = "RRRRRRR_RBBBBBBBB";
+  STRCMP_EQUAL(cpyExpected, cpy.getValues().c_str());
+}
+
+TEST_GROUP(FirstMovePieces)
+{
+  Pieces* fiveByFive;
+  Pieces* sevBySev;
+  Pieces* ninByNin;
+
+  void setup()
+  {
+    fiveByFive = new Pieces(5, 5);
+    sevBySev = new Pieces(7, 7);
+    ninByNin = new Pieces(9, 9);
+
+    fiveByFive->makeNextMove();
+    sevBySev->makeNextMove();
+    ninByNin->makeNextMove();
+  }
+
+  void teardown()
+  {
+    delete fiveByFive;
+    delete sevBySev;
+    delete ninByNin;
+  }
+};
+
 TEST(FirstMovePieces, testPiecesMakesNextMove)
 {
   char fiveExpected[] = "RRRRRRR_RBBBBBBBB";
@@ -133,7 +140,126 @@ TEST(FirstMovePieces, testPiecesParams)
   STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
 }
 
-TEST(FirstMovePieces, testPiecesFindsFirstUpMove)
+TEST(FirstMovePieces, testPiecesFindsSecondMove)
 {
   CHECK_EQUAL(6, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(13, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(22, ninByNin->peekAtNextMove());
+}
+
+TEST_GROUP(SecondMovePieces)
+{
+  Pieces* fiveByFive;
+  Pieces* sevBySev;
+  Pieces* ninByNin;
+
+  void setup()
+  {
+    fiveByFive = new Pieces(5, 5);
+    sevBySev = new Pieces(7, 7);
+    ninByNin = new Pieces(9, 9);
+
+    for (int i = 0; i < 2; i++)
+    {
+      fiveByFive->makeNextMove();
+      sevBySev->makeNextMove();
+      ninByNin->makeNextMove();
+    }
+  }
+
+  void teardown()
+  {
+    delete fiveByFive;
+    delete sevBySev;
+    delete ninByNin;
+  }
+};
+
+TEST(SecondMovePieces, testSecondPiecesParams)
+{
+  char fiveExpected[] = "6 0 10 6 6";
+  STRCMP_EQUAL(fiveExpected, fiveByFive->paramDebugString().c_str());
+
+  char sevExpected[] = "13 1 18 13 12";
+  STRCMP_EQUAL(sevExpected, sevBySev->paramDebugString().c_str());
+
+  char ninExpected[] = "22 2 28 22 20";
+  STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
+}
+
+TEST(SecondMovePieces, testPiecesFindThirdMove)
+{
+  CHECK_EQUAL(3, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(12, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(21, ninByNin->peekAtNextMove());
+}
+
+TEST_GROUP(ThirdMovePieces)
+{
+  Pieces* fiveByFive;
+  Pieces* sevBySev;
+  Pieces* ninByNin;
+
+  void setup()
+  {
+    fiveByFive = new Pieces(5, 5);
+    sevBySev = new Pieces(7, 7);
+    ninByNin = new Pieces(9, 9);
+
+    for (int i = 0; i < 3; i++)
+    {
+      fiveByFive->makeNextMove();
+      sevBySev->makeNextMove();
+      ninByNin->makeNextMove();
+    }
+  }
+
+  void teardown()
+  {
+    delete fiveByFive;
+    delete sevBySev;
+    delete ninByNin;
+  }
+};
+
+TEST(ThirdMovePieces, testThirdPiecesParams)
+{
+  char fiveExpected[] = "3 0 5 6 3";
+  STRCMP_EQUAL(fiveExpected, fiveByFive->paramDebugString().c_str());
+
+  char sevExpected[] = "12 0 18 12 12";
+  STRCMP_EQUAL(sevExpected, sevBySev->paramDebugString().c_str());
+
+  char ninExpected[] = "21 1 28 21 20";
+  STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
+}
+
+TEST(ThirdMovePieces, testPiecesFindFourthMove)
+{
+  CHECK_EQUAL(0, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(8, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(20, ninByNin->peekAtNextMove());
+}
+
+TEST_GROUP(FourthMovePieces)
+{
+  Pieces* fiveByFive;
+
+  void setup()
+  {
+    fiveByFive = new Pieces(5, 5);
+
+    for (int i = 0; i < 4; i++)
+      fiveByFive->makeNextMove();
+  }
+
+  void teardown()
+  {
+    delete fiveByFive;
+  }
+};
+
+TEST(FourthMovePieces, testPiecesFindFifthMove)
+{
+  CHECK_EQUAL(false, fiveByFive->movesExist());
 }

@@ -19,9 +19,3 @@ TEST_GROUP(Board)
     delete board;
   }
 };
-
-//TEST(Board, sensibleNameForTest)
-//{
-  ////CHECK_EQUAL(0, example->DoSomething(""));
-//}
-
