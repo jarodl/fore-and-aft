@@ -3,8 +3,7 @@
  *
  *       Filename:  Board.h
  *
- *    Description:  Wrapper for the string of Board for storing available
- *                  moves.
+ *    Description:  Stores values on a board and moves them around.
  *
  *        Version:  1.0
  *        Created:  01/26/2011 10:25:27
@@ -136,46 +135,113 @@ class Board
       return values;
     }
 
+    // Function: getMoves
+    //
+    // Desc: Returns the stack of moves available on the board.
+    //
+    // Pre: None.
+    //
+    // Post: Returns all moves available.
     std::stack<int> getMoves() const
     {
       return moves;
     }
 
+    // Function: getMiddle
+    //
+    // Desc: Returns the index of the middle of the board. This is where the
+    // open location first starts.
+    //
+    // Pre: The size of the board must be decided.
+    //
+    // Post: The middle index is returned.
     int getMiddle() const
     {
       return middle;
     }
 
+    // Function: getLeftLimit
+    //
+    // Desc: Returns the index of the furthest spot left on the board based on
+    // where the open location is.
+    //
+    // Pre: None.
+    //
+    // Post: The left limit is returned.
     int getLeftLimit() const
     {
       return leftLimit;
     }
 
+    // Function: getRightLimit
+    //
+    // Desc: Returns the index of the furthest spot right on the board.
+    //
+    // Pre: None.
+    //
+    // Post: The right limit is returned.
     int getRightLimit() const
     {
       return rightLimit;
     }
 
+    // Function: getTopLimit
+    //
+    // Desc: Returns the index of the highest spot on the board.
+    //
+    // Pre: None.
+    //
+    // Post: The top limit is returned.
     int getTopLimit() const
     {
       return topLimit;
     }
 
+    // Function: getBottomLimit
+    //
+    // Desc: Returns the index of the spot that is the lowest on the board.
+    //
+    // Pre: None.
+    //
+    // Post: The bottom limit is returned.
     int getBottomLimit() const
     {
       return bottomLimit;
     }
 
+    // Function: getOpenValueIndex
+    //
+    // Desc: Returns the current index of the open value.
+    //
+    // Pre: None.
+    //
+    // Post: The index of the open value is returned.
     int getOpenValueIndex() const
     {
       return openValueIndex;
     }
 
+    // Function: getCornerSize
+    //
+    // Desc: Returns the size of the upper left and lower right corners of the
+    // board. These corners are created from the invalid locations where tiles
+    // cannot be placed.
+    //
+    // Pre: The size of the board must be known.
+    //
+    // Post: The corner size is returned.
     int getCornerSize() const
     {
       return cornerSize;
     }
 
+    // Function: getCornerWidth
+    //
+    // Desc: Returns the width of the upper left and lower right corners.
+    //
+    // Pre: The size of the board must be known.
+    //
+    // Post: The corner width is returned.
     int getCornerWidth() const
     {
       return cornerWidth;
@@ -323,11 +389,11 @@ class Board
 
     // Function: clearValues
     //
-    // Desc:
+    // Desc: Resets the values to their starting values.
     //
-    // Pre:
+    // Pre: None.
     //
-    // Post:
+    // Post: All values on the board have their default setting and locations.
     void clearValues(char upperLeft, char lowerRight)
     {
       for (int i = 0; i < size; i++)
@@ -346,11 +412,11 @@ class Board
 
     // Function: clearMoves
     //
-    // Desc:
+    // Desc: Empties the moves stack of available moves.
     //
-    // Pre:
+    // Pre: None.
     //
-    // Post:
+    // Post: The moves stack is emptied.
     void clearMoves()
     {
       while (!moves.empty())
@@ -359,11 +425,13 @@ class Board
 
     // Function: updateMoves
     //
-    // Desc:
+    // Desc: Looks around the open location for available moves and adds them to
+    // the stack.
     //
-    // Pre:
+    // Pre: None.
     //
-    // Post:
+    // Post: Old moves are cleared and the available moves are added to the
+    // moves stack.
     void updateMoves()
     {
       clearMoves();
@@ -381,6 +449,13 @@ class Board
       }
     }
 
+    // Function: canMoveUpBy
+    //
+    // Desc: Determines if the open location can move up by a certain amount.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if a move exists.
     bool canMoveUpBy(int amount)
     {
       int i = openValueIndex - (cornerWidth * amount);
@@ -391,6 +466,13 @@ class Board
       return false;
     }
 
+    // Function: canMoveDownBy
+    //
+    // Desc: Determines if the open location can move down by a certain amount.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if a move exists.
     bool canMoveDownBy(int amount)
     {
       int i = openValueIndex + (cornerWidth * amount);
@@ -401,6 +483,13 @@ class Board
       return false;
     }
 
+    // Function: canMoveLeftBy
+    //
+    // Desc: Determines if the open location can move left by a certain amount.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if a move exists.
     bool canMoveLeftBy(int amount)
     {
       int i = openValueIndex - amount;
@@ -411,6 +500,13 @@ class Board
       return false;
     }
 
+    // Function: canMoveRightBy
+    //
+    // Desc: Determines if the open location can move right by a certain amount.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if a move exists.
     bool canMoveRightBy(int amount)
     {
       int i = openValueIndex + amount;
