@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
   Solver v = Solver(b);
 
   v.depthFirstSearch();
+  //v.nonRecursiveDFS();
 
   return 0;
 }

@@ -35,6 +35,39 @@ class Solver : public Graph<Board>
       goal.clearValues('B', 'R');
     }
 
+    void nonRecursiveDFS()
+    {
+      std::stack<Node *> seen;
+      std::stack<Node *> current;
+      Node *start = getNode(initialBoard.getValues(), initialBoard);
+      current.push(start);
+
+      while (!current.empty())
+      {
+        Node *n = current.top();
+        current.pop();
+        seen.push(n);
+
+        // get the neighbors
+        while (n->data.movesExist())
+        {
+          Board b = n->data.getCopyAndMakeNextMove();
+          addNeighborToNode(b.getValues(), b, n->data.getValues(), n->data);
+        }
+
+        for (unsigned int i = 0; i < n->neighbors.size(); i++)
+        {
+          if (n->neighbors.at(i)->data == goal)
+          {
+            std::cout << "Found Solution!" << std::endl;
+            return;
+          }
+
+          current.push(n->neighbors.at(i));
+        }
+      }
+    }
+
     void depthFirstSearch()
     {
       while (!searchStack.empty())
@@ -58,7 +91,7 @@ class Solver : public Graph<Board>
 
       if (currentNode->data == goal)
       {
-        std::cout << "SOLUTION FOUND" << std::endl;
+        std::cout << "Solution Found" << std::endl;
         solutionFound = true;
         return;
       }
@@ -68,12 +101,12 @@ class Solver : public Graph<Board>
         {
           Board b = currentNode->data.getCopyAndMakeNextMove();
           addNeighborToNode(b.getValues(), b, currentNode->data.getValues(), currentNode->data);
-        }
 
-        for (unsigned int i = 0; i < currentNode->neighbors.size(); i++)
-        {
-          searchStack.push(currentNode->neighbors.at(i));
-          dfs();
+          for (unsigned int i = 0; i < currentNode->neighbors.size(); i++)
+          {
+            searchStack.push(currentNode->neighbors.at(i));
+            dfs();
+          }
         }
       }
 
