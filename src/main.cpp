@@ -26,96 +26,10 @@ int main(int argc, char* argv[])
   printf("Enter the size of the board in the format (w, h): ");
   scanf("%d, %d", &boardWidth, &boardHeight);
 
-
   Board b = Board(boardWidth, boardHeight);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
+  Solver v = Solver(b);
 
-  //b.move(9, 8);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(7, 9);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(8, 7);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-  
-  //b.move(10, 8);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(13, 10);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(20, 13);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(21, 20);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(22, 21);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(30, 22);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-
-  //b.move(27, 30);
-  //while (!b.pieceMoves.empty())
-  //{
-    //std::cout << b.pieceMoves.top() << std::endl;
-    //b.pieceMoves.pop();
-  //}
-  //std::cout << b << std::endl;
-  Solver v = Solver(boardWidth, boardHeight);
-  v.searchGoalDF();
+  v.depthFirstSearch();
 
   return 0;
 }

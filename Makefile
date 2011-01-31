@@ -1,12 +1,12 @@
 CC = g++
-CFLAGS = -c -Wall
-SOURCES = src/*
-INCLUDE = include/*
+SOURCES = src/main.cpp
+INCLUDE = include/
+CFLAGS = -c -Wall -I$(INCLUDE) -g3
 
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = fore-and-aft
 
-all: $(INCLUDE) $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@
@@ -15,4 +15,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o $(EXECUTABLE)
+	rm -rf src/*.o $(EXECUTABLE)

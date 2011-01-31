@@ -19,50 +19,77 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
+#include <iostream>
 #include "Board.h"
+#include "Graph.h"
+#include <stack>
 
-class Solver
+class Solver : public Graph<Board>
 {
-  private:
-    struct Node
-    {
-      Node(Board b) : data(b)
-      {
-        visited = false;
-      }
-
-      ~Node()
-      {
-        std::vector<Node*>::iterator it;
-        for (it = states.begin(); it < states.end(); it++)
-          delete *it;
-      }
-
-      bool visited;
-      Board data;
-      std::vector<Node*> states;
-    };
-
   public:
-    Solver()
+    Solver(Board b)
     {
+      initialBoard = b;
+      solutionFound = false;
     }
 
-    Solver(int boardWidth, int boardHeight)
+    void depthFirstSearch()
     {
+      while (!searchStack.empty())
+        searchStack.pop();
+
+      Node *start = getNode(initialBoard.getValues(), initialBoard);
+      searchStack.push(start);
+      dfs();
     }
 
-    void searchGoalDF()
+    void dfs()
     {
+      if (solutionFound)
+        return;
+
+      Node *currentNode = searchStack.top();
+      searchStack.pop();
+      currentNode->visited = true;
+      
+      //std::cout << currentNode->data << std::endl;
+
+      if (currentNode->data.getValues() == "BBBBBBBB_RRRRRRRR")
+      {
+        std::cout << "SOLUTION FOUND" << std::endl;
+        solutionFound = true;
+        return;
+      }
+      else
+      {
+        while (currentNode->data.movesExist())
+        {
+          Board b = currentNode->data.getCopyAndMakeNextMove();
+          addNeighborToNode(b.getValues(), b, currentNode->data.getValues(), currentNode->data);
+        }
+
+        for (unsigned int i = 0; i < currentNode->neighbors.size(); i++)
+        {
+          searchStack.push(currentNode->neighbors.at(i));
+          dfs();
+        }
+      }
+
+      currentNode->visited = false;
     }
 
-    void searchGoalBF()
+    void breadthFirstSearch()
     {
     }
 
     ~Solver()
     {
     }
+
+  public:
+    Board initialBoard;
+    std::stack<Node *> searchStack;
+    bool solutionFound;
 };
 
 #endif

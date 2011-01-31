@@ -48,6 +48,11 @@ TEST(InitBoard, testPiecesStringSize)
   CHECK_EQUAL(49, ninByNin->getSize());
 }
 
+TEST(InitBoard, testOpenValueIndex)
+{
+  CHECK_EQUAL(8, fiveByFive->getOpenValueIndex());
+}
+
 TEST(InitBoard, testPiecesClearsValues)
 {
   char fiveExpected[] = "RRRRRRRR_BBBBBBBB";
@@ -89,6 +94,20 @@ TEST(InitBoard, testGetCopyAndMakeMove)
   Board cpy = fiveByFive->getCopyAndMakeNextMove();
   char cpyExpected[] = "RRRRRRR_RBBBBBBBB";
   STRCMP_EQUAL(cpyExpected, cpy.getValues().c_str());
+  char fiveExpected[] = "RRRRRRRR_BBBBBBBB";
+  STRCMP_EQUAL(fiveExpected, fiveByFive->getValues().c_str());
+  Board cpy2 = fiveByFive->getCopyAndMakeNextMove();
+  char cpy2Expected[] = "RRRRR_RRRBBBBBBBB";
+  STRCMP_EQUAL(cpy2Expected, cpy2.getValues().c_str());
+}
+
+TEST(InitBoard, testEqualityOperator)
+{
+  Board same = Board(*fiveByFive);
+  CHECK(same == *fiveByFive);
+
+  Board notSame = fiveByFive->getCopyAndMakeNextMove();
+  CHECK(notSame != *fiveByFive);
 }
 
 TEST_GROUP(FirstMoveBoard)
@@ -262,4 +281,71 @@ TEST_GROUP(FourthMoveBoard)
 TEST(FourthMoveBoard, testPiecesFindFifthMove)
 {
   CHECK_EQUAL(false, fiveByFive->movesExist());
+}
+
+TEST_GROUP(MovingBoard)
+{
+  Board* board;
+
+  void setup()
+  {
+    board = new Board(5, 5);
+  }
+
+  void teardown()
+  {
+    delete board;
+  }
+};
+
+TEST(MovingBoard, testBoardHoldsState)
+{
+  Board *b; 
+
+  // First move
+  char first[] = "RRRRRRRR_BBBBBBBB";
+  STRCMP_EQUAL(first, board->getValues().c_str());
+
+  // Second move
+  char second[] = "RRRRRRR_RBBBBBBBB";
+  b = new Board(board->getCopyAndMakeNextMove());
+  STRCMP_EQUAL(second, b->getValues().c_str());
+  delete b;
+
+  // Third move
+  char third[] = "RRRRR_RRRBBBBBBBB";
+  b = new Board(board->getCopyAndMakeNextMove());
+  STRCMP_EQUAL(third, b->getValues().c_str());
+  delete b;
+
+  // Fourth move
+  char fourth[] = "RRRRRRRRB_BBBBBBB";
+  b = new Board(board->getCopyAndMakeNextMove());
+  STRCMP_EQUAL(fourth, b->getValues().c_str());
+  delete b;
+
+  // Fifth move
+  char fifth[] = "RRRRRRRRBBB_BBBBB";
+  b = new Board(board->getCopyAndMakeNextMove());
+  STRCMP_EQUAL(fifth, b->getValues().c_str());
+  delete b;
+}
+
+TEST_GROUP(SolvingBoard)
+{
+  Board *b;
+
+  void setup()
+  {
+    b = new Board(5, 5);
+  }
+
+  void teardown()
+  {
+    delete b;
+  }
+};
+
+TEST(SolvingBoard, testBoardMakesLegalMoves)
+{
 }

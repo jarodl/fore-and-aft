@@ -21,11 +21,13 @@
 #include <string>
 #include <stack>
 
+#include <iostream>
 #include <sstream>
 
 #define UPPER_LEFT 'R'
 #define LOWER_RIGHT 'B'
 #define OPEN '_'
+#define INVALID 'X'
 
 class Board
 {
@@ -54,17 +56,19 @@ class Board
       width = cpy.getWidth();
       height = cpy.getHeight();
 
-      values = cpy.getValues();
-      moves = cpy.getMoves();
-
       size = cpy.getSize();
-      cornerWidth = cpy.getCornerWidth();
-      cornerSize = cpy.getCornerSize();
+      middle = cpy.getMiddle();
 
+      cornerWidth = cpy.getCornerWidth();
+
+      openValueIndex = cpy.getOpenValueIndex();
       leftLimit = cpy.getLeftLimit();
       rightLimit = cpy.getRightLimit();
       topLimit = cpy.getTopLimit();
       bottomLimit = cpy.getBottomLimit();
+
+      values = cpy.getValues();
+      moves = cpy.getMoves();
     }
 
     // Function: getCopyAndMakeNextMove
@@ -80,6 +84,7 @@ class Board
       Board nextState = Board(*this);
 
       nextState.makeNextMove();
+      moves.pop();
 
       return nextState;
     }
@@ -221,20 +226,6 @@ class Board
       return openValueIndex;
     }
 
-    // Function: getCornerSize
-    //
-    // Desc: Returns the size of the upper left and lower right corners of the
-    // board. These corners are created from the invalid locations where tiles
-    // cannot be placed.
-    //
-    // Pre: The size of the board must be known.
-    //
-    // Post: The corner size is returned.
-    int getCornerSize() const
-    {
-      return cornerSize;
-    }
-
     // Function: getCornerWidth
     //
     // Desc: Returns the width of the upper left and lower right corners.
@@ -303,6 +294,75 @@ class Board
       return o.str();
     }
 
+    // Function: ==
+    //
+    // Desc: Compares two value strings for equality.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if strings are equal, false otherwise.
+    bool operator==(const Board &b) const
+    {
+      return values == b.getValues();
+    }
+
+    // Function: !=
+    //
+    // Desc: Returns the opposite of ==.
+    //
+    // Pre: None.
+    //
+    // Post: Returns true if the values are not equal.
+    bool operator!=(const Board &b) const
+    {
+      return !(*this == b);
+    }
+
+    // Function: <<
+    //
+    // Desc: Overloads the output operator for displaying a board.
+    //
+    // Pre: None.
+    //
+    // Post: Displays the board.
+    friend std::ostream& operator<<(std::ostream& out, const Board& b)
+    {
+      std::string values = b.getValues();
+      int x;
+      int width = b.getCornerWidth();
+
+      for (int i = 0; i < b.getMiddle(); i++)
+      {
+        x = (i - ((i / width) * width));
+
+        out << values[i] << " ";
+
+        if (x == width - 1)
+        {
+          for (int j = 0; j < width - 1; j++)
+            out << INVALID << " ";
+          out << std::endl;
+        }
+      }
+      
+      for (int i = b.getMiddle(); i < b.getMiddle() + width; i++)
+        out << values[i] << " ";
+      out << std::endl;
+
+      for (int i = 0; i < b.getHeight() / 2; i++)
+      {
+        for (int j = 0; j < width - 1; j++)
+          out << INVALID << " ";
+
+        int start = b.getMiddle() + ((i + 1) * width);
+        for (int j = start; j < start + width; j++)
+          out << values[j] << " ";
+        out << std::endl;
+      }
+
+      return out;
+    }
+
   private:
 
     // Function: swapOpenValueWithValue
@@ -348,9 +408,23 @@ class Board
       int y = ((openValueIndex - cornerOffset) / cornerWidth);
       int x = (openValueIndex - cornerOffset - (y * cornerWidth));
 
+      if (openValueIndex > middle)
+        y -= offset;
+
       int rightOffset = 0;
       int leftOffset = 0;
-      int vertOffset = (cornerWidth * y);
+      int topOffset = (cornerWidth * y);
+      int bottomOffset;
+
+      if (openValueIndex == middle)
+        bottomOffset = (cornerWidth * y);
+      else if (openValueIndex < middle && x == offset)
+        bottomOffset = (cornerWidth * ((offset - y) + offset));
+      else
+        bottomOffset = (cornerWidth * (offset - y));
+
+      if (openValueIndex > middle && x == 0)
+        topOffset += (cornerWidth * offset);
 
       if (middleRow && openValueIndex <= middle)
         rightOffset = offset;
@@ -360,21 +434,21 @@ class Board
       leftLimit = openValueIndex - x - leftOffset;
       rightLimit = openValueIndex + (offset - x) + rightOffset;
 
-      topLimit = openValueIndex - vertOffset;
-      bottomLimit = openValueIndex + vertOffset;
+      topLimit = openValueIndex - topOffset;
+      bottomLimit = openValueIndex + bottomOffset;
 
       if (middleRow && openValueIndex > middle)
         topLimit = openValueIndex;
       else if (middleRow && openValueIndex < middle)
         bottomLimit = openValueIndex;
+
     }
 
     // Function: calculateParams
     //
     // Desc: Calculates valuable data that we can use to make moves and
     // determine the parameters easier. The cornerWidth is how wide the upper
-    // left and lower right corners are. The cornerSize is how many values are
-    // in each corner.
+    // left and lower right corners are.
     //
     // Pre: Assumes that the board has been initialized.
     //
@@ -384,7 +458,6 @@ class Board
       size = (width * height) - ((height - 1) * (width / 2));
       middle = size / 2;
       cornerWidth = (width / 2) + 1;
-      cornerSize = cornerWidth * cornerWidth;
     }
 
     // Function: clearValues
@@ -446,6 +519,9 @@ class Board
           moves.push(openValueIndex - (cornerWidth * i));
         if (canMoveLeftBy(i))
           moves.push(openValueIndex - i);
+
+        if ((int)moves.size() > 4)
+          break;
       }
     }
 
@@ -525,7 +601,6 @@ class Board
     int middle;
 
     int cornerWidth;
-    int cornerSize;
 
     int openValueIndex;
     int leftLimit;
