@@ -363,6 +363,29 @@ class Board
       return out;
     }
 
+    // Function: clearValues
+    //
+    // Desc: Resets the values to their starting values.
+    //
+    // Pre: None.
+    //
+    // Post: All values on the board have their default setting and locations.
+    void clearValues(char upperLeft, char lowerRight)
+    {
+      for (int i = 0; i < size; i++)
+      {
+        if (i < middle)
+          values[i] = upperLeft;
+        else if (i > middle)
+          values[i] = lowerRight;
+        else
+        {
+          values[i] = OPEN;
+          setOpenValueIndex(i);
+        }
+      }
+    }
+
   private:
 
     // Function: swapOpenValueWithValue
@@ -460,29 +483,6 @@ class Board
       cornerWidth = (width / 2) + 1;
     }
 
-    // Function: clearValues
-    //
-    // Desc: Resets the values to their starting values.
-    //
-    // Pre: None.
-    //
-    // Post: All values on the board have their default setting and locations.
-    void clearValues(char upperLeft, char lowerRight)
-    {
-      for (int i = 0; i < size; i++)
-      {
-        if (i < middle)
-          values[i] = upperLeft;
-        else if (i > middle)
-          values[i] = lowerRight;
-        else
-        {
-          values[i] = OPEN;
-          setOpenValueIndex(i);
-        }
-      }
-    }
-
     // Function: clearMoves
     //
     // Desc: Empties the moves stack of available moves.
@@ -519,9 +519,6 @@ class Board
           moves.push(openValueIndex - (cornerWidth * i));
         if (canMoveLeftBy(i))
           moves.push(openValueIndex - i);
-
-        if ((int)moves.size() > 4)
-          break;
       }
     }
 

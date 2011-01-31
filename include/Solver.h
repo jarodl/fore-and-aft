@@ -31,6 +31,8 @@ class Solver : public Graph<Board>
     {
       initialBoard = b;
       solutionFound = false;
+      goal = Board(b.getWidth(), b.getHeight());
+      goal.clearValues('B', 'R');
     }
 
     void depthFirstSearch()
@@ -54,7 +56,7 @@ class Solver : public Graph<Board>
       
       //std::cout << currentNode->data << std::endl;
 
-      if (currentNode->data.getValues() == "BBBBBBBB_RRRRRRRR")
+      if (currentNode->data == goal)
       {
         std::cout << "SOLUTION FOUND" << std::endl;
         solutionFound = true;
@@ -88,6 +90,7 @@ class Solver : public Graph<Board>
 
   public:
     Board initialBoard;
+    Board goal;
     std::stack<Node *> searchStack;
     bool solutionFound;
 };

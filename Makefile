@@ -1,7 +1,7 @@
 CC = g++
 SOURCES = src/main.cpp
 INCLUDE = include/
-CFLAGS = -c -Wall -I$(INCLUDE) -g3
+CFLAGS = -c -Wall -I$(INCLUDE)
 
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = fore-and-aft
