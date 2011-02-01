@@ -84,6 +84,11 @@ class Solver : public Graph<Board>
       Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
       searchStack.push(start);
       dfs();
+
+      std::vector<Node *>::iterator itr;
+      for (itr = allNodes.begin(); itr != allNodes.end(); itr++)
+        if ((*itr)->visited)
+          std::cout << (*itr)->data << std::endl;
     }
 
     void dfs()
@@ -146,10 +151,7 @@ class Solver : public Graph<Board>
           Board b = n->data.getCopyAndMakeNextMove();
           int hash = hashBoard(b.getValues());
           if (!nodeExists(hash))
-          {
-            std::cout << "avoided duplicate" << std::endl;
             addNeighborToNode(hash, b, n->key, n->data);
-          }
         }
 
         std::vector<Node *>::iterator itr;
@@ -166,13 +168,18 @@ class Solver : public Graph<Board>
 
     int hashBoard(const std::string &values)
     {
-      int hash = InitialFNV;
+      //int hash = InitialFNV;
 
-      for (int i = 0; i < (int)values.length(); i++)
-      {
-        hash = hash ^ (values[i]);
-        hash = hash * FNVMultiple;
-      }
+      //for (int i = 0; i < (int)values.length(); i++)
+      //{
+        //hash = hash ^ (values[i]);
+        //hash = hash * FNVMultiple;
+      //}
+
+      //return hash;
+      int hash = 5381;
+      for (int i = 0; i < values.length(); i++)
+        hash = ((hash << 5) + hash) + values[i];
 
       return hash;
     }
