@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
   Board b = Board(boardWidth, boardHeight);
   Solver v = Solver(b);
 
-  v.depthFirstSearch();
+  v.breadthFirstSearch();
+  //v.depthFirstSearch();
   //v.nonRecursiveDFS();
 
   return 0;

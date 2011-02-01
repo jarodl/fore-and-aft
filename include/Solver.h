@@ -23,6 +23,7 @@
 #include "Board.h"
 #include "Graph.h"
 #include <stack>
+#include <queue>
 
 #define InitialFNV 2166136261U
 #define FNVMultiple 16777619
@@ -124,6 +125,43 @@ class Solver : public Graph<Board>
 
     void breadthFirstSearch()
     {
+      std::queue<Node *> current;
+      Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
+      current.push(start);
+      start->visited = true;
+
+      while (!current.empty())
+      {
+        Node *n = current.front();
+        current.pop();
+
+        if (n->key == goalKey)
+        {
+          std::cout << "Found solution!" << std::endl;
+          return;
+        }
+
+        while (n->data.movesExist())
+        {
+          Board b = n->data.getCopyAndMakeNextMove();
+          int hash = hashBoard(b.getValues());
+          if (!nodeExists(hash))
+          {
+            std::cout << "avoided duplicate" << std::endl;
+            addNeighborToNode(hash, b, n->key, n->data);
+          }
+        }
+
+        std::vector<Node *>::iterator itr;
+        for (itr = n->neighbors.begin(); itr != n->neighbors.end(); itr++)
+        {
+          if (!(*itr)->visited)
+          {
+            current.push(*itr);
+            (*itr)->visited = true;
+          }
+        }
+      }
     }
 
     int hashBoard(const std::string &values)
