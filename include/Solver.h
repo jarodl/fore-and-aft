@@ -34,8 +34,9 @@ class Solver : public Graph<Board>
     {
       initialBoard = b;
       solutionFound = false;
-      goal = Board(b.getWidth(), b.getHeight());
-      goal.clearValues('B', 'R');
+      Board *goal = new Board(b.getWidth(), b.getHeight());
+      goal->clearValues('B', 'R');
+      goalKey = hashBoard(goal->getValues());
     }
 
     void nonRecursiveDFS()
@@ -55,18 +56,21 @@ class Solver : public Graph<Board>
         while (n->data.movesExist())
         {
           Board b = n->data.getCopyAndMakeNextMove();
-          addNeighborToNode(hashBoard(b.getValues()), b, n->key, n->data);
-        }
+          int hash = hashBoard(b.getValues());
+          if (!nodeExists(hash))
+            addNeighborToNode(hashBoard(b.getValues()), b, n->key, n->data);
 
-        for (unsigned int i = 0; i < n->neighbors.size(); i++)
-        {
-          if (n->neighbors.at(i)->data == goal)
+          std::vector<Node *>::iterator i;
+          for (i = n->neighbors.begin(); i != n->neighbors.end(); i++)
           {
-            std::cout << "Found Solution!" << std::endl;
-            return;
-          }
+            if ((*i)->key == goalKey)
+            {
+              std::cout << "Found Solution!" << std::endl;
+              return;
+            }
 
-          current.push(n->neighbors.at(i));
+            current.push(*i);
+          }
         }
       }
     }
@@ -87,7 +91,7 @@ class Solver : public Graph<Board>
       searchStack.pop();
       currentNode->visited = true;
       
-      if (currentNode->data == goal)
+      if (currentNode->key == goalKey)
       {
         std::cout << "Solution Found" << std::endl;
         solutionFound = true;
@@ -141,7 +145,7 @@ class Solver : public Graph<Board>
 
   public:
     Board initialBoard;
-    Board goal;
+    int goalKey;
     std::stack<Node *> searchStack;
     bool solutionFound;
 };
