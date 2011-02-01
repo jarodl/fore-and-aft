@@ -513,17 +513,39 @@ class Board
     {
       clearMoves();
 
-      for (int i = 2; i >= 1; i--)
-      {
-        if (canMoveDownBy(i))
-          moves.push(openValueIndex + (cornerWidth * i));
-        if (canMoveRightBy(i))
-          moves.push(openValueIndex + i);
-        if (canMoveUpBy(i))
-          moves.push(openValueIndex - (cornerWidth * i));
-        if (canMoveLeftBy(i))
-          moves.push(openValueIndex - i);
-      }
+      int left = openValueIndex - 1;
+      int right = openValueIndex + 1;
+      int up = openValueIndex - cornerWidth;
+      int down = openValueIndex + cornerWidth;
+
+      if (canMoveDownOneTo(down))
+        moves.push(down);
+
+      if (canMoveRightOneTo(right))
+        moves.push(right);
+
+      if (canMoveUpOneTo(up))
+        moves.push(up);
+
+      if (canMoveLeftOneTo(left))
+        moves.push(left);
+
+      left = left - 1;
+      right = right + 1;
+      up = up - cornerWidth;
+      down = down + cornerWidth;
+
+      if (canMoveDownTwoTo(down))
+        moves.push(down);
+
+      if (canMoveRightTwoTo(right))
+        moves.push(right);
+
+      if (canMoveUpTwoTo(up))
+        moves.push(up);
+
+      if (canMoveLeftTwoTo(left))
+        moves.push(left);
     }
 
     // Function: canMoveUpBy
@@ -534,14 +556,15 @@ class Board
     //
     // Post: Returns true if a move exists.
     inline
-    bool canMoveUpBy(int amount)
+    bool canMoveUpOneTo(int pos)
     {
-      int i = openValueIndex - (cornerWidth * amount);
-
-      if (i >= topLimit && values[i] == UPPER_LEFT)
-        return (amount == 2) ? values[i + cornerWidth] == LOWER_RIGHT : true;
-
-      return false;
+      return (pos >= topLimit && values[pos] == UPPER_LEFT);
+    }
+    inline
+    bool canMoveUpTwoTo(int pos)
+    {
+      return (pos >= topLimit && values[pos] == UPPER_LEFT &&
+          values[pos + cornerWidth] == LOWER_RIGHT);
     }
 
     // Function: canMoveDownBy
@@ -552,14 +575,15 @@ class Board
     //
     // Post: Returns true if a move exists.
     inline
-    bool canMoveDownBy(int amount)
+    bool canMoveDownOneTo(int pos)
     {
-      int i = openValueIndex + (cornerWidth * amount);
-
-      if (i <= bottomLimit && values[i] == LOWER_RIGHT)
-        return (amount == 2) ? values[i - cornerWidth] == UPPER_LEFT : true;
-
-      return false;
+      return (pos <= bottomLimit && values[pos] == LOWER_RIGHT);
+    }
+    inline
+    bool canMoveDownTwoTo(int pos)
+    {
+      return (pos <= bottomLimit && values[pos] == LOWER_RIGHT &&
+          values[pos - cornerWidth] == UPPER_LEFT);
     }
 
     // Function: canMoveLeftBy
@@ -570,14 +594,15 @@ class Board
     //
     // Post: Returns true if a move exists.
     inline
-    bool canMoveLeftBy(int amount)
+    bool canMoveLeftOneTo(int pos)
     {
-      int i = openValueIndex - amount;
-
-      if (i >= leftLimit && values[i] == UPPER_LEFT)
-        return (amount == 2) ? values[openValueIndex - 1] == LOWER_RIGHT : true;
-
-      return false;
+      return (pos >= leftLimit && values[pos] == UPPER_LEFT);
+    }
+    inline
+    bool canMoveLeftTwoTo(int pos)
+    {
+      return (pos >= leftLimit && values[pos] == UPPER_LEFT &&
+          values[pos + 1] == LOWER_RIGHT);
     }
 
     // Function: canMoveRightBy
@@ -588,14 +613,15 @@ class Board
     //
     // Post: Returns true if a move exists.
     inline
-    bool canMoveRightBy(int amount)
+    bool canMoveRightOneTo(int pos)
     {
-      int i = openValueIndex + amount;
-
-      if (i <= rightLimit && values[i] == LOWER_RIGHT)
-        return (amount == 2) ? values[openValueIndex + 1] == UPPER_LEFT : true;
-
-      return false;
+      return (pos <= rightLimit && values[pos] == LOWER_RIGHT);
+    }
+    inline
+    bool canMoveRightTwoTo(int pos)
+    {
+      return (pos <= rightLimit && values[pos] == LOWER_RIGHT &&
+          values[pos - 1] == UPPER_LEFT);
     }
 
   private:
