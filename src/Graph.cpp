@@ -29,40 +29,50 @@ Graph<T>::~Graph()
 }
 
 template <typename T>
-void Graph<T>::addNeighborToNode(std::string neighborName, T neighborValue,
-    std::string sourceName, T sourceValue)
+void Graph<T>::addNeighborToNode(int neighborKey, T neighborValue,
+    int sourceKey, T sourceValue)
 {
-  Node *n = getNodeWithValue(neighborName, neighborValue);
-  Node *m = getNodeWithValue(sourceName, sourceValue);
+  Node *n = getNodeWithValue(neighborKey, neighborValue);
+  Node *m = getNodeWithValue(sourceKey, sourceValue);
   m->neighbors.push_back(n);
 }
 
 template <typename T>
-void Graph<T>::markNodeVisited(std::string name, T value)
+void Graph<T>::markNodeVisited(int key, T value)
 {
-  Node *n = getNodeWithValue(name, value);
+  Node *n = getNodeWithValue(key, value);
   n->visited = true;
 }
 
 template <typename T>
-typename Graph<T>::Node* Graph<T>::getNode(std::string name, T value)
+typename Graph<T>::Node* Graph<T>::getNode(int key, T value)
 {
-  return getNodeWithValue(name, value);
+  return getNodeWithValue(key, value);
 }
 
 template <typename T>
-typename Graph<T>::Node* Graph<T>::getNodeWithValue(std::string name, T value)
+typename Graph<T>::Node* Graph<T>::getNodeWithValue(int key, T value)
 {
-  typename std::map<std::string, Node *>::iterator itr;
-  itr = nodeMap.find(name);
+  typename std::map<int, Node *>::iterator itr;
+  itr = nodeMap.find(key);
 
   if (itr == nodeMap.end())
   {
-    Node *newNode = new Node(value);
+    Node *newNode = new Node(value, key);
     allNodes.push_back(newNode);
-    nodeMap.insert(std::pair<std::string, Node*>(name, newNode));
+    nodeMap.insert(std::pair<int, Node*>(key , newNode));
+
     return newNode;
   }
 
   return (*itr).second;
+}
+
+template <typename T>
+bool Graph<T>::nodeExists(int key)
+{
+  typename std::map<int, Node*>::iterator itr;
+  itr = nodeMap.find(key);
+
+  return (itr != nodeMap.end());
 }

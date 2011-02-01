@@ -1,3 +1,4 @@
 .DS_Store
 *.o
 fore-and-aft
+tests/fore-and-aft-tests

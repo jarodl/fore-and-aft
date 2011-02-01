@@ -303,6 +303,8 @@ class Board
     // Post: Returns true if strings are equal, false otherwise.
     bool operator==(const Board &b) const
     {
+      if (openValueIndex != b.getOpenValueIndex())
+        return false;
       return values == b.getValues();
     }
 
@@ -419,6 +421,7 @@ class Board
     //
     // Post: The instance variables leftLimit, rightLimit, topLimit and
     // bottomLimit are calculated based on the index of the open value.
+    inline
     void setOpenValueIndex(int newOpenValueIndex)
     {
       openValueIndex = newOpenValueIndex;
@@ -476,6 +479,7 @@ class Board
     // Pre: Assumes that the board has been initialized.
     //
     // Post: Valuable data is set for determining valid moves.
+    inline
     void calculateParams()
     {
       size = (width * height) - ((height - 1) * (width / 2));
@@ -529,6 +533,7 @@ class Board
     // Pre: None.
     //
     // Post: Returns true if a move exists.
+    inline
     bool canMoveUpBy(int amount)
     {
       int i = openValueIndex - (cornerWidth * amount);
@@ -546,6 +551,7 @@ class Board
     // Pre: None.
     //
     // Post: Returns true if a move exists.
+    inline
     bool canMoveDownBy(int amount)
     {
       int i = openValueIndex + (cornerWidth * amount);
@@ -563,6 +569,7 @@ class Board
     // Pre: None.
     //
     // Post: Returns true if a move exists.
+    inline
     bool canMoveLeftBy(int amount)
     {
       int i = openValueIndex - amount;
@@ -580,6 +587,7 @@ class Board
     // Pre: None.
     //
     // Post: Returns true if a move exists.
+    inline
     bool canMoveRightBy(int amount)
     {
       int i = openValueIndex + amount;

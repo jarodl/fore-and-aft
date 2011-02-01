@@ -29,30 +29,33 @@ class Graph
   protected:
     struct Node
     {
-      Node(T d) : data(d)
+      Node(T d, int k) : data(d)
       {
         visited = false;
+        key = k;
       }
 
       std::vector<Node *> neighbors;
       T data;
-
+      int key;
       bool visited;
     };
 
-    std::map<std::string, Node *> nodeMap;
+    std::map<int, Node *> nodeMap;
     std::vector<Node *> allNodes;
+    bool nodeExists(int key);
 
   private:
-    Node* getNodeWithValue(std::string name, T value);
+    Node* getNodeWithValue(int key, T value);
 
   public:
     Graph();
     ~Graph();
-    void addNeighborToNode(std::string neighborName, T neighborValue,
-        std::string sourceName, T sourceValue);
-    void markNodeVisited(std::string name, T value);
-    Node* getNode(std::string name, T value);
+    void addNeighborToNode(int neighborKey, T neighborValue,
+        int sourceKey, T sourceValue);
+    void markNodeVisited(int key, T value);
+    Node* getNode(int key, T value);
+
 };
 
 #include "../src/Graph.cpp"

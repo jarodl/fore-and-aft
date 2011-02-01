@@ -24,6 +24,9 @@
 #include "Graph.h"
 #include <stack>
 
+#define InitialFNV 2166136261U
+#define FNVMultiple 16777619
+
 class Solver : public Graph<Board>
 {
   public:
@@ -39,7 +42,7 @@ class Solver : public Graph<Board>
     {
       std::stack<Node *> seen;
       std::stack<Node *> current;
-      Node *start = getNode(initialBoard.getValues(), initialBoard);
+      Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
       current.push(start);
 
       while (!current.empty())
@@ -52,7 +55,7 @@ class Solver : public Graph<Board>
         while (n->data.movesExist())
         {
           Board b = n->data.getCopyAndMakeNextMove();
-          addNeighborToNode(b.getValues(), b, n->data.getValues(), n->data);
+          addNeighborToNode(hashBoard(b.getValues()), b, n->key, n->data);
         }
 
         for (unsigned int i = 0; i < n->neighbors.size(); i++)
@@ -73,22 +76,17 @@ class Solver : public Graph<Board>
       while (!searchStack.empty())
         searchStack.pop();
 
-      Node *start = getNode(initialBoard.getValues(), initialBoard);
+      Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
       searchStack.push(start);
       dfs();
     }
 
     void dfs()
     {
-      if (solutionFound)
-        return;
-
       Node *currentNode = searchStack.top();
       searchStack.pop();
       currentNode->visited = true;
       
-      //std::cout << currentNode->data << std::endl;
-
       if (currentNode->data == goal)
       {
         std::cout << "Solution Found" << std::endl;
@@ -100,12 +98,19 @@ class Solver : public Graph<Board>
         while (currentNode->data.movesExist())
         {
           Board b = currentNode->data.getCopyAndMakeNextMove();
-          addNeighborToNode(b.getValues(), b, currentNode->data.getValues(), currentNode->data);
+          int hash = hashBoard(b.getValues());
+          if (!nodeExists(hash))
+            addNeighborToNode(hash, b, currentNode->key, currentNode->data);
 
-          for (unsigned int i = 0; i < currentNode->neighbors.size(); i++)
+          std::vector<Node *>::iterator itr;
+          for (itr = currentNode->neighbors.begin();
+              itr != currentNode->neighbors.end(); itr++)
           {
-            searchStack.push(currentNode->neighbors.at(i));
+            searchStack.push(*itr);
             dfs();
+
+            if (solutionFound)
+              return;
           }
         }
       }
@@ -115,6 +120,19 @@ class Solver : public Graph<Board>
 
     void breadthFirstSearch()
     {
+    }
+
+    int hashBoard(const std::string &values)
+    {
+      int hash = InitialFNV;
+
+      for (int i = 0; i < (int)values.length(); i++)
+      {
+        hash = hash ^ (values[i]);
+        hash = hash * FNVMultiple;
+      }
+
+      return hash;
     }
 
     ~Solver()
