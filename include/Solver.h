@@ -25,9 +25,6 @@
 #include <stack>
 #include <queue>
 
-#define InitialFNV 2166136261U
-#define FNVMultiple 16777619
-
 class Solver : public Graph<Board>
 {
   public:
@@ -168,17 +165,8 @@ class Solver : public Graph<Board>
 
     int hashBoard(const std::string &values)
     {
-      //int hash = InitialFNV;
-
-      //for (int i = 0; i < (int)values.length(); i++)
-      //{
-        //hash = hash ^ (values[i]);
-        //hash = hash * FNVMultiple;
-      //}
-
-      //return hash;
       int hash = 5381;
-      for (int i = 0; i < values.length(); i++)
+      for (unsigned int i = 0; i < values.length(); i++)
         hash = ((hash << 5) + hash) + values[i];
 
       return hash;
