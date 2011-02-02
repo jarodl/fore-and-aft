@@ -24,8 +24,9 @@ Graph<T>::Graph()
 template <typename T>
 Graph<T>::~Graph()
 {
-  //for (unsigned int i = 0; i < allNodes.size(); i++)
-    //delete allNodes[i];
+  typename std::map<int, Node*>::iterator itr;
+  for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
+    delete (*itr).second;
 }
 
 template <typename T>

@@ -50,7 +50,6 @@ class Solver : public Graph<Board>
         current.pop();
         seen.push(n);
 
-        // get the neighbors
         while (n->data.movesExist())
         {
           Board b = n->data.getCopyAndMakeNextMove();
@@ -62,10 +61,7 @@ class Solver : public Graph<Board>
           for (i = n->neighbors.begin(); i != n->neighbors.end(); i++)
           {
             if ((*i)->key == goalKey)
-            {
-              std::cout << "Found Solution!" << std::endl;
               return;
-            }
 
             current.push(*i);
           }
@@ -82,10 +78,10 @@ class Solver : public Graph<Board>
       searchStack.push(start);
       dfs();
 
-      //std::vector<Node *>::iterator itr;
-      //for (itr = allNodes.begin(); itr != allNodes.end(); itr++)
-        //if ((*itr)->visited)
-          //std::cout << (*itr)->data << std::endl;
+      std::map<int, Node *>::iterator itr;
+      for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
+        if ((*itr).second->visited)
+          std::cout << (*itr).second->data << std::endl;
     }
 
     void dfs()
@@ -96,7 +92,6 @@ class Solver : public Graph<Board>
       
       if (currentNode->key == goalKey)
       {
-        std::cout << "Solution Found" << std::endl;
         solutionFound = true;
         return;
       }
@@ -137,27 +132,26 @@ class Solver : public Graph<Board>
         Node *n = current.front();
         current.pop();
 
-        if (n->key == goalKey)
+        if (n->key != goalKey)
         {
-          std::cout << "Found solution!" << std::endl;
-          return;
-        }
+          n->visited = false;
 
-        while (n->data.movesExist())
-        {
-          Board b = n->data.getCopyAndMakeNextMove();
-          int hash = hashBoard(b.getValues());
-          if (!nodeExists(hash))
-            addNeighborToNode(hash, b, n->key, n->data);
-        }
-
-        std::vector<Node *>::iterator itr;
-        for (itr = n->neighbors.begin(); itr != n->neighbors.end(); itr++)
-        {
-          if (!(*itr)->visited)
+          while (n->data.movesExist())
           {
-            current.push(*itr);
-            (*itr)->visited = true;
+            Board b = n->data.getCopyAndMakeNextMove();
+            int hash = hashBoard(b.getValues());
+            if (!nodeExists(hash))
+              addNeighborToNode(hash, b, n->key, n->data);
+          }
+
+          std::vector<Node *>::iterator itr;
+          for (itr = n->neighbors.begin(); itr != n->neighbors.end(); itr++)
+          {
+            if (!(*itr)->visited)
+            {
+              current.push(*itr);
+              (*itr)->visited = true;
+            }
           }
         }
       }
