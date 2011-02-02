@@ -58,8 +58,8 @@ class Board
 
       size = cpy.getSize();
       middle = cpy.getMiddle();
-
       cornerWidth = cpy.getCornerWidth();
+      offset = cpy.getOffset();
 
       openValueIndex = cpy.getOpenValueIndex();
       leftLimit = cpy.getLeftLimit();
@@ -264,6 +264,18 @@ class Board
       return height;
     }
 
+    // Function: getOffset
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post:
+    int getOffset() const
+    {
+      return offset;
+    }
+
     // Function: peekAtNextMove
     //
     // Desc: Returns the first move in the moves list without removing it.
@@ -425,7 +437,6 @@ class Board
     void setOpenValueIndex(int newOpenValueIndex)
     {
       openValueIndex = newOpenValueIndex;
-      int offset = cornerWidth - 1;
 
       if (openValueIndex < middle - offset)
       {
@@ -501,9 +512,10 @@ class Board
     inline
     void calculateParams()
     {
-      size = (width * height) - ((height - 1) * (width / 2));
+      offset = width / 2;
+      size = (width * height) - ((height - 1) * offset);
       middle = size / 2;
-      cornerWidth = (width / 2) + 1;
+      cornerWidth = offset + 1;
     }
 
     // Function: clearMoves
@@ -648,8 +660,8 @@ class Board
 
     int size;
     int middle;
-
     int cornerWidth;
+    int offset;
 
     int openValueIndex;
     int leftLimit;
