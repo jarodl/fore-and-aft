@@ -161,9 +161,9 @@ TEST(FirstMoveBoard, testPiecesParams)
 
 TEST(FirstMoveBoard, testPiecesFindsSecondMove)
 {
-  CHECK_EQUAL(6, fiveByFive->peekAtNextMove());
-  CHECK_EQUAL(13, sevBySev->peekAtNextMove());
-  CHECK_EQUAL(22, ninByNin->peekAtNextMove());
+  CHECK_EQUAL(9, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(16, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(25, ninByNin->peekAtNextMove());
 }
 
 TEST_GROUP(SecondMoveBoard)
@@ -196,21 +196,21 @@ TEST_GROUP(SecondMoveBoard)
 
 TEST(SecondMoveBoard, testSecondPiecesParams)
 {
-  char fiveExpected[] = "6 0 10 6 6";
+  char fiveExpected[] = "9 9 10 24 6";
   STRCMP_EQUAL(fiveExpected, fiveByFive->paramDebugString().c_str());
 
-  char sevExpected[] = "13 1 18 13 12";
+  char sevExpected[] = "16 16 18 44 12";
   STRCMP_EQUAL(sevExpected, sevBySev->paramDebugString().c_str());
 
-  char ninExpected[] = "22 2 28 22 20";
+  char ninExpected[] = "25 25 28 70 20";
   STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
 }
 
 TEST(SecondMoveBoard, testPiecesFindThirdMove)
 {
-  CHECK_EQUAL(3, fiveByFive->peekAtNextMove());
-  CHECK_EQUAL(12, sevBySev->peekAtNextMove());
-  CHECK_EQUAL(21, ninByNin->peekAtNextMove());
+  CHECK_EQUAL(8, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(15, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(24, ninByNin->peekAtNextMove());
 }
 
 TEST_GROUP(ThirdMoveBoard)
@@ -243,21 +243,21 @@ TEST_GROUP(ThirdMoveBoard)
 
 TEST(ThirdMoveBoard, testThirdPiecesParams)
 {
-  char fiveExpected[] = "3 0 5 6 3";
+  char fiveExpected[] = "8 2 10 14 6";
   STRCMP_EQUAL(fiveExpected, fiveByFive->paramDebugString().c_str());
 
-  char sevExpected[] = "12 0 18 12 12";
+  char sevExpected[] = "15 3 18 27 12";
   STRCMP_EQUAL(sevExpected, sevBySev->paramDebugString().c_str());
 
-  char ninExpected[] = "21 1 28 21 20";
+  char ninExpected[] = "24 4 28 44 20";
   STRCMP_EQUAL(ninExpected, ninByNin->paramDebugString().c_str());
 }
 
 TEST(ThirdMoveBoard, testPiecesFindFourthMove)
 {
-  CHECK_EQUAL(0, fiveByFive->peekAtNextMove());
-  CHECK_EQUAL(8, sevBySev->peekAtNextMove());
-  CHECK_EQUAL(20, ninByNin->peekAtNextMove());
+  CHECK_EQUAL(6, fiveByFive->peekAtNextMove());
+  CHECK_EQUAL(13, sevBySev->peekAtNextMove());
+  CHECK_EQUAL(22, ninByNin->peekAtNextMove());
 }
 
 TEST_GROUP(FourthMoveBoard)
@@ -280,7 +280,7 @@ TEST_GROUP(FourthMoveBoard)
 
 TEST(FourthMoveBoard, testPiecesFindFifthMove)
 {
-  CHECK_EQUAL(false, fiveByFive->movesExist());
+  CHECK_EQUAL(true, fiveByFive->movesExist());
 }
 
 TEST_GROUP(MovingBoard)

@@ -37,6 +37,12 @@ class Solver : public Graph<Board>
       goalKey = hashBoard(goal->getValues());
     }
 
+    void heuristicSearch()
+    {
+      std::stack<Node *> closed;
+      std::stack<Node *> open;
+    }
+
     void nonRecursiveDFS()
     {
       std::stack<Node *> seen;
