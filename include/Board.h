@@ -515,8 +515,7 @@ class Board
     // Post: The moves stack is emptied.
     void clearMoves()
     {
-      while (!moves.empty())
-        moves.pop();
+      moves = std::stack<int>();
     }
 
     // Function: updateMoves
