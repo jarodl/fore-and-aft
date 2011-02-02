@@ -56,7 +56,7 @@ class Solver : public Graph<Board>
           Board b = n->data.getCopyAndMakeNextMove();
           int hash = hashBoard(b.getValues());
           if (!nodeExists(hash))
-            addNeighborToNode(hashBoard(b.getValues()), b, n->key, n->data);
+            addNeighborToNode(hash, b, n->key, n->data);
 
           std::vector<Node *>::iterator i;
           for (i = n->neighbors.begin(); i != n->neighbors.end(); i++)
@@ -82,10 +82,10 @@ class Solver : public Graph<Board>
       searchStack.push(start);
       dfs();
 
-      std::vector<Node *>::iterator itr;
-      for (itr = allNodes.begin(); itr != allNodes.end(); itr++)
-        if ((*itr)->visited)
-          std::cout << (*itr)->data << std::endl;
+      //std::vector<Node *>::iterator itr;
+      //for (itr = allNodes.begin(); itr != allNodes.end(); itr++)
+        //if ((*itr)->visited)
+          //std::cout << (*itr)->data << std::endl;
     }
 
     void dfs()

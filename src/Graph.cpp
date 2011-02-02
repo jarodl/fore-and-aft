@@ -24,34 +24,21 @@ Graph<T>::Graph()
 template <typename T>
 Graph<T>::~Graph()
 {
-  for (unsigned int i = 0; i < allNodes.size(); i++)
-    delete allNodes[i];
+  //for (unsigned int i = 0; i < allNodes.size(); i++)
+    //delete allNodes[i];
 }
 
 template <typename T>
 void Graph<T>::addNeighborToNode(int neighborKey, T neighborValue,
     int sourceKey, T sourceValue)
 {
-  Node *n = getNodeWithValue(neighborKey, neighborValue);
-  Node *m = getNodeWithValue(sourceKey, sourceValue);
+  Node *n = getNode(neighborKey, neighborValue);
+  Node *m = getNode(sourceKey, sourceValue);
   m->neighbors.push_back(n);
 }
 
 template <typename T>
-void Graph<T>::markNodeVisited(int key, T value)
-{
-  Node *n = getNodeWithValue(key, value);
-  n->visited = true;
-}
-
-template <typename T>
 typename Graph<T>::Node* Graph<T>::getNode(int key, T value)
-{
-  return getNodeWithValue(key, value);
-}
-
-template <typename T>
-typename Graph<T>::Node* Graph<T>::getNodeWithValue(int key, T value)
 {
   typename std::map<int, Node *>::iterator itr;
   itr = nodeMap.find(key);
@@ -59,7 +46,6 @@ typename Graph<T>::Node* Graph<T>::getNodeWithValue(int key, T value)
   if (itr == nodeMap.end())
   {
     Node *newNode = new Node(value, key);
-    allNodes.push_back(newNode);
     nodeMap.insert(std::pair<int, Node*>(key , newNode));
 
     return newNode;

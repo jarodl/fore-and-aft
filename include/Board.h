@@ -425,49 +425,68 @@ class Board
     void setOpenValueIndex(int newOpenValueIndex)
     {
       openValueIndex = newOpenValueIndex;
-
       int offset = cornerWidth - 1;
-      int cornerOffset = (openValueIndex > middle) ? offset : 0;
-      bool middleRow = (openValueIndex >= middle - offset &&
-          openValueIndex <= middle + offset);
 
-      int y = ((openValueIndex - cornerOffset) / cornerWidth);
-      int x = (openValueIndex - cornerOffset - (y * cornerWidth));
+      if (openValueIndex < middle - offset)
+      {
+        int y = openValueIndex / cornerWidth;
+        int x = openValueIndex - (y * cornerWidth);
+        if (x == offset)
+          bottomLimit = openValueIndex + (cornerWidth * ((offset - y) + offset));
+        else
+          bottomLimit = openValueIndex + (cornerWidth * (offset - y));
+        topLimit = x;
 
-      if (openValueIndex > middle)
-        y -= offset;
+        leftLimit = openValueIndex - x;
+        rightLimit = openValueIndex + (offset - x);
+        return;
+      }
+      else if (openValueIndex > middle + offset)
+      {
+        int y = (openValueIndex - offset) / cornerWidth;
+        int x = openValueIndex - offset - (y * cornerWidth);
+        y = y - offset;
+        if (x == 0)
+          topLimit = openValueIndex - (y * cornerWidth) - (cornerWidth * offset);
+        else
+          topLimit = openValueIndex - (y * cornerWidth);
+        bottomLimit = openValueIndex + (cornerWidth * (offset - y));
 
-      int rightOffset = 0;
-      int leftOffset = 0;
-      int topOffset = (cornerWidth * y);
-      int bottomOffset;
-
-      if (openValueIndex == middle)
-        bottomOffset = (cornerWidth * y);
-      else if (openValueIndex < middle && x == offset)
-        bottomOffset = (cornerWidth * ((offset - y) + offset));
-      else
-        bottomOffset = (cornerWidth * (offset - y));
-
-      if (openValueIndex > middle && x == 0)
-        topOffset += (cornerWidth * offset);
-
-      if (middleRow && openValueIndex <= middle)
-        rightOffset = offset;
-      if (middleRow && openValueIndex > middle)
-        leftOffset = offset;
-
-      leftLimit = openValueIndex - x - leftOffset;
-      rightLimit = openValueIndex + (offset - x) + rightOffset;
-
-      topLimit = openValueIndex - topOffset;
-      bottomLimit = openValueIndex + bottomOffset;
-
-      if (middleRow && openValueIndex > middle)
+        leftLimit = openValueIndex - x;
+        rightLimit = openValueIndex + (offset - x);
+        return;
+      }
+      else if (openValueIndex > middle)
+      {
+        int y = (openValueIndex - offset) / cornerWidth;
+        int x = openValueIndex - offset - (y * cornerWidth);
+        y = y - offset;
         topLimit = openValueIndex;
-      else if (middleRow && openValueIndex < middle)
+        bottomLimit = openValueIndex + openValueIndex + (cornerWidth * (offset - y));
+        leftLimit = openValueIndex - x - offset;
+        rightLimit = openValueIndex + (offset - x);
+        return;
+      }
+      else if (openValueIndex < middle)
+      {
+        int y = openValueIndex / cornerWidth;
+        int x = openValueIndex - (y * cornerWidth);
+        topLimit = x;
         bottomLimit = openValueIndex;
-
+        leftLimit = openValueIndex - x;
+        rightLimit = openValueIndex + (offset - x) + offset;
+        return;
+      }
+      else
+      {
+        int y = openValueIndex / cornerWidth;
+        int x = openValueIndex - (y * cornerWidth);
+        topLimit = x;
+        bottomLimit = openValueIndex + (cornerWidth * y);
+        leftLimit = openValueIndex - x;
+        rightLimit = openValueIndex + (offset - x) + offset;
+        return;
+      }
     }
 
     // Function: calculateParams

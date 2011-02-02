@@ -42,18 +42,13 @@ class Graph
     };
 
     std::map<int, Node *> nodeMap;
-    std::vector<Node *> allNodes;
     bool nodeExists(int key);
-
-  private:
-    Node* getNodeWithValue(int key, T value);
 
   public:
     Graph();
     ~Graph();
     void addNeighborToNode(int neighborKey, T neighborValue,
         int sourceKey, T sourceValue);
-    void markNodeVisited(int key, T value);
     Node* getNode(int key, T value);
 
 };
