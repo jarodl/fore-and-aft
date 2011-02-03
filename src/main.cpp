@@ -32,7 +32,6 @@ int main(int argc, char* argv[])
 
   //v.breadthFirstSearch();
   v.depthFirstSearch();
-  //v.nonRecursiveDFS();
 
   //GLBoard *b = new GLBoard(argc, argv);
   //b->setInstance(b);

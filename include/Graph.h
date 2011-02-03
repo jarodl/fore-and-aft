@@ -21,7 +21,6 @@
 
 #include <map>
 #include <vector>
-#include <string>
 
 template <typename T>
 class Graph
@@ -50,7 +49,6 @@ class Graph
     void addNeighborToNode(int neighborKey, T neighborValue,
         int sourceKey, T sourceValue);
     Node* getNode(int key, T value);
-
 };
 
 #include "../src/Graph.cpp"

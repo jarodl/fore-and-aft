@@ -20,8 +20,6 @@
 
 #include <string>
 #include <stack>
-
-#include <iostream>
 #include <sstream>
 
 #define UPPER_LEFT 'R'
@@ -44,8 +42,7 @@ class Board
 
       calculateParams();
 
-      values = "";
-      values.resize(size);
+      values = new char[size];
 
       clearValues(UPPER_LEFT, LOWER_RIGHT);
       updateMoves();
@@ -67,8 +64,16 @@ class Board
       topLimit = cpy.getTopLimit();
       bottomLimit = cpy.getBottomLimit();
 
-      values = cpy.getValues();
+      values = new char[size];
+      strcpy(values, cpy.getValues());
+
       moves = cpy.getMoves();
+    }
+
+    ~Board()
+    {
+      //delete[] values;
+      values = NULL;
     }
 
     // Function: getCopyAndMakeNextMove
@@ -124,7 +129,7 @@ class Board
     // Post: The size of the Board string is returned.
     int getSize() const
     {
-      return values.size();
+      return size;
     }
 
 
@@ -135,7 +140,7 @@ class Board
     // Pre: None.
     //
     // Post: The values are returned.
-    std::string getValues() const
+    char* getValues() const
     {
       return values;
     }
@@ -669,7 +674,7 @@ class Board
     int topLimit;
     int bottomLimit;
 
-    std::string values;
+    char *values;
     std::stack<int> moves;
 };
 

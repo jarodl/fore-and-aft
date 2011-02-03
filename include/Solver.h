@@ -43,46 +43,10 @@ class Solver : public Graph<Board>
       std::stack<Node *> open;
     }
 
-    void nonRecursiveDFS()
-    {
-      std::stack<Node *> seen;
-      std::stack<Node *> current;
-      Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
-      current.push(start);
-
-      while (!current.empty())
-      {
-        Node *n = current.top();
-        current.pop();
-        seen.push(n);
-
-        while (n->data.movesExist())
-        {
-          Board b = n->data.getCopyAndMakeNextMove();
-          int hash = hashBoard(b.getValues());
-          if (!nodeExists(hash))
-            addNeighborToNode(hash, b, n->key, n->data);
-
-          std::vector<Node *>::iterator i;
-          for (i = n->neighbors.begin(); i != n->neighbors.end(); i++)
-          {
-            if ((*i)->key == goalKey)
-              return;
-
-            current.push(*i);
-          }
-        }
-      }
-    }
-
     void depthFirstSearch()
     {
-      while (!searchStack.empty())
-        searchStack.pop();
-
       Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
-      searchStack.push(start);
-      dfs();
+      dfs(start);
 
       std::map<int, Node *>::iterator itr;
       for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
@@ -90,10 +54,8 @@ class Solver : public Graph<Board>
           std::cout << (*itr).second->data << std::endl;
     }
 
-    void dfs()
+    void dfs(Node *currentNode)
     {
-      Node *currentNode = searchStack.top();
-      searchStack.pop();
       currentNode->visited = true;
       
       if (currentNode->key == goalKey)
@@ -114,8 +76,7 @@ class Solver : public Graph<Board>
           for (itr = currentNode->neighbors.begin();
               itr != currentNode->neighbors.end(); itr++)
           {
-            searchStack.push(*itr);
-            dfs();
+            dfs(*itr);
 
             if (solutionFound)
               return;
@@ -179,7 +140,6 @@ class Solver : public Graph<Board>
   public:
     Board initialBoard;
     int goalKey;
-    std::stack<Node *> searchStack;
     bool solutionFound;
 };
 
