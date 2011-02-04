@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+
 #include "../include/Solver.h"
 #include "../include/Board.h"
 #include "../include/GLBoard.h"

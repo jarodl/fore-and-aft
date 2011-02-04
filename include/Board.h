@@ -15,6 +15,7 @@
  *
  * =====================================================================================
  */
+
 #ifndef Board_H
 #define Board_H
 
@@ -31,10 +32,24 @@ class Board
 {
   public:
 
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     Board()
     {
     }
 
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     Board(int w, int h)
     {
       width = w;
@@ -42,12 +57,20 @@ class Board
 
       calculateParams();
 
-      values = new char[size];
+      values = "";
+      values.resize(size);
 
       clearValues(UPPER_LEFT, LOWER_RIGHT);
       updateMoves();
     }
 
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     Board(const Board &cpy)
     {
       width = cpy.getWidth();
@@ -64,16 +87,20 @@ class Board
       topLimit = cpy.getTopLimit();
       bottomLimit = cpy.getBottomLimit();
 
-      values = new char[size];
-      strcpy(values, cpy.getValues());
+      values = cpy.getValues();
 
       moves = cpy.getMoves();
     }
 
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     ~Board()
     {
-      //delete[] values;
-      values = NULL;
     }
 
     // Function: getCopyAndMakeNextMove
@@ -140,7 +167,7 @@ class Board
     // Pre: None.
     //
     // Post: The values are returned.
-    char* getValues() const
+    std::string getValues() const
     {
       return values;
     }
@@ -555,13 +582,10 @@ class Board
 
       if (canMoveDownOneTo(down))
         moves.push(down);
-
       if (canMoveRightOneTo(right))
         moves.push(right);
-
       if (canMoveUpOneTo(up))
         moves.push(up);
-
       if (canMoveLeftOneTo(left))
         moves.push(left);
 
@@ -572,13 +596,10 @@ class Board
 
       if (canMoveDownTwoTo(down))
         moves.push(down);
-
       if (canMoveRightTwoTo(right))
         moves.push(right);
-
       if (canMoveUpTwoTo(up))
         moves.push(up);
-
       if (canMoveLeftTwoTo(left))
         moves.push(left);
     }
@@ -595,6 +616,14 @@ class Board
     {
       return (pos >= topLimit && values[pos] == UPPER_LEFT);
     }
+
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     inline
     bool canMoveUpTwoTo(int pos)
     {
@@ -614,6 +643,14 @@ class Board
     {
       return (pos <= bottomLimit && values[pos] == LOWER_RIGHT);
     }
+
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     inline
     bool canMoveDownTwoTo(int pos)
     {
@@ -633,6 +670,14 @@ class Board
     {
       return (pos >= leftLimit && values[pos] == UPPER_LEFT);
     }
+
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     inline
     bool canMoveLeftTwoTo(int pos)
     {
@@ -652,6 +697,14 @@ class Board
     {
       return (pos <= rightLimit && values[pos] == LOWER_RIGHT);
     }
+
+    // Function: Board
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     inline
     bool canMoveRightTwoTo(int pos)
     {
@@ -674,7 +727,7 @@ class Board
     int topLimit;
     int bottomLimit;
 
-    char *values;
+    std::string values;
     std::stack<int> moves;
 };
 

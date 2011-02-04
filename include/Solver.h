@@ -20,14 +20,23 @@
 #define SOLVER_H
 
 #include <iostream>
-#include "Board.h"
-#include "Graph.h"
 #include <stack>
 #include <queue>
+
+#include "Board.h"
+#include "Graph.h"
 
 class Solver : public Graph<Board>
 {
   public:
+
+    // Function: Solver
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     Solver(Board b)
     {
       initialBoard = b;
@@ -37,12 +46,26 @@ class Solver : public Graph<Board>
       goalKey = hashBoard(goal->getValues());
     }
 
+    // Function: heuristicSearch
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     void heuristicSearch()
     {
       std::stack<Node *> closed;
       std::stack<Node *> open;
     }
 
+    // Function: depthFirstSearch
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     void depthFirstSearch()
     {
       Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
@@ -54,39 +77,14 @@ class Solver : public Graph<Board>
           std::cout << (*itr).second->data << std::endl;
     }
 
-    void dfs(Node *currentNode)
-    {
-      currentNode->visited = true;
-      
-      if (currentNode->key == goalKey)
-      {
-        solutionFound = true;
-        return;
-      }
-      else
-      {
-        while (currentNode->data.movesExist())
-        {
-          Board b = currentNode->data.getCopyAndMakeNextMove();
-          int hash = hashBoard(b.getValues());
-          if (!nodeExists(hash))
-            addNeighborToNode(hash, b, currentNode->key, currentNode->data);
 
-          std::vector<Node *>::iterator itr;
-          for (itr = currentNode->neighbors.begin();
-              itr != currentNode->neighbors.end(); itr++)
-          {
-            dfs(*itr);
-
-            if (solutionFound)
-              return;
-          }
-        }
-      }
-
-      currentNode->visited = false;
-    }
-
+    // Function: breadthFirstSearch
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     void breadthFirstSearch()
     {
       std::queue<Node *> current;
@@ -124,6 +122,13 @@ class Solver : public Graph<Board>
       }
     }
 
+    // Function: hashBoard
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     int hashBoard(const std::string &values)
     {
       int hash = 5381;
@@ -133,11 +138,59 @@ class Solver : public Graph<Board>
       return hash;
     }
 
+    // Function: ~Solver
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
     ~Solver()
     {
     }
 
-  public:
+  private:
+
+    // Function: dfs
+    //
+    // Desc:
+    //
+    // Pre:
+    //
+    // Post: 
+    void dfs(Node *currentNode)
+    {
+      currentNode->visited = true;
+      
+      if (currentNode->key == goalKey)
+      {
+        solutionFound = true;
+        return;
+      }
+      else
+      {
+        while (currentNode->data.movesExist())
+        {
+          Board b = currentNode->data.getCopyAndMakeNextMove();
+          int hash = hashBoard(b.getValues());
+          if (!nodeExists(hash))
+            addNeighborToNode(hash, b, currentNode->key, currentNode->data);
+
+          std::vector<Node *>::iterator itr;
+          for (itr = currentNode->neighbors.begin();
+              itr != currentNode->neighbors.end(); itr++)
+          {
+            dfs(*itr);
+
+            if (solutionFound)
+              return;
+          }
+        }
+      }
+
+      currentNode->visited = false;
+    }
+
     Board initialBoard;
     int goalKey;
     bool solutionFound;

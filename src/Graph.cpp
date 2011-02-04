@@ -16,11 +16,25 @@
  * =====================================================================================
  */
 
+// Function: Graph
+//
+// Desc:
+//
+// Pre:
+//
+// Post: 
 template <typename T>
 Graph<T>::Graph()
 {
 }
 
+// Function: ~Graph
+//
+// Desc:
+//
+// Pre:
+//
+// Post: 
 template <typename T>
 Graph<T>::~Graph()
 {
@@ -29,6 +43,13 @@ Graph<T>::~Graph()
     delete (*itr).second;
 }
 
+// Function: addNeighborToNode
+//
+// Desc:
+//
+// Pre:
+//
+// Post: 
 template <typename T>
 void Graph<T>::addNeighborToNode(int neighborKey, T neighborValue,
     int sourceKey, T sourceValue)
@@ -38,6 +59,13 @@ void Graph<T>::addNeighborToNode(int neighborKey, T neighborValue,
   m->neighbors.push_back(n);
 }
 
+// Function: getNode
+//
+// Desc:
+//
+// Pre:
+//
+// Post: 
 template <typename T>
 typename Graph<T>::Node* Graph<T>::getNode(int key, T value)
 {
@@ -55,6 +83,13 @@ typename Graph<T>::Node* Graph<T>::getNode(int key, T value)
   return (*itr).second;
 }
 
+// Function: nodeExists
+//
+// Desc:
+//
+// Pre:
+//
+// Post: 
 template <typename T>
 bool Graph<T>::nodeExists(int key)
 {
