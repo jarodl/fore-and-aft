@@ -25,8 +25,8 @@
 
 #define UPPER_LEFT 'R'
 #define LOWER_RIGHT 'B'
-#define OPEN '_'
-#define INVALID 'X'
+#define OPEN ' '
+#define INVALID '#'
 
 class Board
 {
@@ -45,11 +45,11 @@ class Board
 
     // Function: Board
     //
-    // Desc:
+    // Desc: Constructs a new board object given a height and width.
     //
-    // Pre:
+    // Pre: A valid board has an odd width and height.
     //
-    // Post: 
+    // Post: A new board object is created.
     Board(int w, int h)
     {
       width = w;
@@ -57,7 +57,6 @@ class Board
 
       calculateParams();
 
-      values = "";
       values.resize(size);
 
       clearValues(UPPER_LEFT, LOWER_RIGHT);
@@ -66,11 +65,11 @@ class Board
 
     // Function: Board
     //
-    // Desc:
+    // Desc: Copy constructor for a board object.
     //
     // Pre:
     //
-    // Post: 
+    // Post: A deep copy is performed on a board.
     Board(const Board &cpy)
     {
       width = cpy.getWidth();
@@ -94,7 +93,7 @@ class Board
 
     // Function: Board
     //
-    // Desc:
+    // Desc: Deconstructor for Board.
     //
     // Pre:
     //
@@ -298,11 +297,12 @@ class Board
 
     // Function: getOffset
     //
-    // Desc:
+    // Desc: Returns the offset of the board. The offset is the number of
+    // invalid spots in a row.
     //
-    // Pre:
+    // Pre: None.
     //
-    // Post:
+    // Post: The offset is returned.
     int getOffset() const
     {
       return offset;
@@ -616,14 +616,6 @@ class Board
     {
       return (pos >= topLimit && values[pos] == UPPER_LEFT);
     }
-
-    // Function: Board
-    //
-    // Desc:
-    //
-    // Pre:
-    //
-    // Post: 
     inline
     bool canMoveUpTwoTo(int pos)
     {
@@ -643,14 +635,6 @@ class Board
     {
       return (pos <= bottomLimit && values[pos] == LOWER_RIGHT);
     }
-
-    // Function: Board
-    //
-    // Desc:
-    //
-    // Pre:
-    //
-    // Post: 
     inline
     bool canMoveDownTwoTo(int pos)
     {
@@ -670,14 +654,6 @@ class Board
     {
       return (pos >= leftLimit && values[pos] == UPPER_LEFT);
     }
-
-    // Function: Board
-    //
-    // Desc:
-    //
-    // Pre:
-    //
-    // Post: 
     inline
     bool canMoveLeftTwoTo(int pos)
     {
@@ -697,14 +673,6 @@ class Board
     {
       return (pos <= rightLimit && values[pos] == LOWER_RIGHT);
     }
-
-    // Function: Board
-    //
-    // Desc:
-    //
-    // Pre:
-    //
-    // Post: 
     inline
     bool canMoveRightTwoTo(int pos)
     {

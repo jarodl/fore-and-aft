@@ -55,11 +55,11 @@ TEST(InitBoard, testOpenValueIndex)
 
 TEST(InitBoard, testPiecesClearsValues)
 {
-  char fiveExpected[] = "RRRRRRRR_BBBBBBBB";
+  char fiveExpected[] = "RRRRRRRR BBBBBBBB";
   STRCMP_EQUAL(fiveExpected, fiveByFive->getValues().c_str());
-  char sevExpected[] = "RRRRRRRRRRRRRRR_BBBBBBBBBBBBBBB";
+  char sevExpected[] = "RRRRRRRRRRRRRRR BBBBBBBBBBBBBBB";
   STRCMP_EQUAL(sevExpected, sevBySev->getValues().c_str());
-  char ninExpected[] = "RRRRRRRRRRRRRRRRRRRRRRRR_BBBBBBBBBBBBBBBBBBBBBBBB";
+  char ninExpected[] = "RRRRRRRRRRRRRRRRRRRRRRRR BBBBBBBBBBBBBBBBBBBBBBBB";
   STRCMP_EQUAL(ninExpected, ninByNin->getValues().c_str());
 }
 
@@ -92,12 +92,12 @@ TEST(InitBoard, testPiecesParams)
 TEST(InitBoard, testGetCopyAndMakeMove)
 {
   Board cpy = fiveByFive->getCopyAndMakeNextMove();
-  char cpyExpected[] = "RRRRRRR_RBBBBBBBB";
+  char cpyExpected[] = "RRRRRRR RBBBBBBBB";
   STRCMP_EQUAL(cpyExpected, cpy.getValues().c_str());
-  char fiveExpected[] = "RRRRRRRR_BBBBBBBB";
+  char fiveExpected[] = "RRRRRRRR BBBBBBBB";
   STRCMP_EQUAL(fiveExpected, fiveByFive->getValues().c_str());
   Board cpy2 = fiveByFive->getCopyAndMakeNextMove();
-  char cpy2Expected[] = "RRRRR_RRRBBBBBBBB";
+  char cpy2Expected[] = "RRRRR RRRBBBBBBBB";
   STRCMP_EQUAL(cpy2Expected, cpy2.getValues().c_str());
 }
 
@@ -137,13 +137,13 @@ TEST_GROUP(FirstMoveBoard)
 
 TEST(FirstMoveBoard, testPiecesMakesNextMove)
 {
-  char fiveExpected[] = "RRRRRRR_RBBBBBBBB";
+  char fiveExpected[] = "RRRRRRR RBBBBBBBB";
   STRCMP_EQUAL(fiveExpected, fiveByFive->getValues().c_str());
 
-  char sevExpected[] = "RRRRRRRRRRRRRR_RBBBBBBBBBBBBBBB";
+  char sevExpected[] = "RRRRRRRRRRRRRR RBBBBBBBBBBBBBBB";
   STRCMP_EQUAL(sevExpected, sevBySev->getValues().c_str());
 
-  char ninExpected[] = "RRRRRRRRRRRRRRRRRRRRRRR_RBBBBBBBBBBBBBBBBBBBBBBBB";
+  char ninExpected[] = "RRRRRRRRRRRRRRRRRRRRRRR RBBBBBBBBBBBBBBBBBBBBBBBB";
   STRCMP_EQUAL(ninExpected, ninByNin->getValues().c_str());
 }
 
@@ -303,29 +303,29 @@ TEST(MovingBoard, testBoardHoldsState)
   Board *b; 
 
   // First move
-  char first[] = "RRRRRRRR_BBBBBBBB";
+  char first[] = "RRRRRRRR BBBBBBBB";
   STRCMP_EQUAL(first, board->getValues().c_str());
 
   // Second move
-  char second[] = "RRRRRRR_RBBBBBBBB";
+  char second[] = "RRRRRRR RBBBBBBBB";
   b = new Board(board->getCopyAndMakeNextMove());
   STRCMP_EQUAL(second, b->getValues().c_str());
   delete b;
 
   // Third move
-  char third[] = "RRRRR_RRRBBBBBBBB";
+  char third[] = "RRRRR RRRBBBBBBBB";
   b = new Board(board->getCopyAndMakeNextMove());
   STRCMP_EQUAL(third, b->getValues().c_str());
   delete b;
 
   // Fourth move
-  char fourth[] = "RRRRRRRRB_BBBBBBB";
+  char fourth[] = "RRRRRRRRB BBBBBBB";
   b = new Board(board->getCopyAndMakeNextMove());
   STRCMP_EQUAL(fourth, b->getValues().c_str());
   delete b;
 
   // Fifth move
-  char fifth[] = "RRRRRRRRBBB_BBBBB";
+  char fifth[] = "RRRRRRRRBBB BBBBB";
   b = new Board(board->getCopyAndMakeNextMove());
   STRCMP_EQUAL(fifth, b->getValues().c_str());
   delete b;

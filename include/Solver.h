@@ -22,6 +22,7 @@
 #include <iostream>
 #include <stack>
 #include <queue>
+#include <vector>
 
 #include "Board.h"
 #include "Graph.h"
@@ -37,13 +38,48 @@ class Solver : public Graph<Board>
     // Pre:
     //
     // Post: 
+    Solver()
+    {
+    }
+
+    // Function: Solver
+    //
+    // Desc: Constructs a new Solver object.
+    //
+    // Pre: Takes a Board object.
+    //
+    // Post: A new solver is returned.
     Solver(Board b)
     {
       initialBoard = b;
       solutionFound = false;
+      nodesInSolution = 0;
+      nodesExpanded = 0;
+
       Board *goal = new Board(b.getWidth(), b.getHeight());
       goal->clearValues('B', 'R');
       goalKey = hashBoard(goal->getValues());
+    }
+
+    // Function: storeSolution
+    //
+    // Desc: Pushes the visited nodes into a vector for output and counting.
+    //
+    // Pre:
+    //
+    // Post: The number of nodes used are counted and stored in the solution
+    // vector.
+    void storeSolution()
+    {
+      std::map<int, Node *>::iterator itr;
+      for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
+      {
+        if ((*itr).second->visited)
+        {
+          nodesInSolution += 1;
+          solution.push_back((*itr).second);
+        }
+      }
     }
 
     // Function: heuristicSearch
@@ -55,40 +91,35 @@ class Solver : public Graph<Board>
     // Post: 
     void heuristicSearch()
     {
-      std::stack<Node *> closed;
-      std::stack<Node *> open;
     }
 
     // Function: depthFirstSearch
     //
-    // Desc:
+    // Desc: Calls the recursive dfs() function which performs a depth first
+    // search on the node map.
     //
     // Pre:
     //
-    // Post: 
+    // Post: DFS is ran.
     void depthFirstSearch()
     {
       Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
       dfs(start);
-
-      std::map<int, Node *>::iterator itr;
-      for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
-        if ((*itr).second->visited)
-          std::cout << (*itr).second->data << std::endl;
+      storeSolution();
     }
-
 
     // Function: breadthFirstSearch
     //
-    // Desc:
+    // Desc: Runs a breadthFirstSearch on the nodeMap.
     //
     // Pre:
     //
-    // Post: 
+    // Post: A BFS is ran and nodes are marked as visited.
     void breadthFirstSearch()
     {
       std::queue<Node *> current;
       Node *start = getNode(hashBoard(initialBoard.getValues()), initialBoard);
+      nodesExpanded += 1;
       current.push(start);
       start->visited = true;
 
@@ -106,7 +137,10 @@ class Solver : public Graph<Board>
             Board b = n->data.getCopyAndMakeNextMove();
             int hash = hashBoard(b.getValues());
             if (!nodeExists(hash))
+            {
               addNeighborToNode(hash, b, n->key, n->data);
+              nodesExpanded += 1;
+            }
           }
 
           std::vector<Node *>::iterator itr;
@@ -119,16 +153,22 @@ class Solver : public Graph<Board>
             }
           }
         }
+        else
+          return;
+
+        n->visited = false;
       }
+
+      storeSolution();
     }
 
     // Function: hashBoard
     //
-    // Desc:
+    // Desc: Hashing function. Returns a unique value for a given string.
     //
     // Pre:
     //
-    // Post: 
+    // Post: Integer corresponding to a string is returned.
     int hashBoard(const std::string &values)
     {
       int hash = 5381;
@@ -138,9 +178,33 @@ class Solver : public Graph<Board>
       return hash;
     }
 
+    // Function: getNodesInSolution
+    //
+    // Desc: Returns the number of nodes in the solution.
+    //
+    // Pre:
+    //
+    // Post: The number of nodes in the solution is returned.
+    int getNodesInSolution() const
+    {
+      return nodesInSolution;
+    }
+
+    // Function: getNodesExpanded
+    //
+    // Desc: Returns the number of nodes expanded by the solver.
+    //
+    // Pre:
+    //
+    // Post: Number of nodes expanded is returned.
+    int getNodesExpanded() const
+    {
+      return nodesExpanded;
+    }
+
     // Function: ~Solver
     //
-    // Desc:
+    // Desc: Deconstructs the Solver.
     //
     // Pre:
     //
@@ -149,17 +213,49 @@ class Solver : public Graph<Board>
     {
     }
 
-  private:
-
-    // Function: dfs
+    // Function: outputSolution
     //
-    // Desc:
+    // Desc: Writes the solution to an output stream.
+    //
+    // Pre:
+    //
+    // Post: The solution is written to an output stream.
+    void outputSolution(std::ostream &out)
+    {
+      std::vector<Node *>::iterator itr;
+      for (itr = solution.begin(); itr != solution.end(); itr++)
+        out << (*itr)->data << std::endl;
+    }
+
+    // Function: <<
+    //
+    // Desc: Outputs stats about the solved board.
     //
     // Pre:
     //
     // Post: 
+    friend std::ostream& operator<<(std::ostream &out, const Solver &s)
+    {
+      out << std::endl
+          << "Nodes expanded: " << s.getNodesExpanded() << std::endl
+          << "Nodes in solution: " << s.getNodesInSolution() << std::endl;
+
+      return out;
+    }
+
+  private:
+
+    // Function: dfs
+    //
+    // Desc: Recursive DFS function to traverse a graph.
+    //
+    // Pre: The node to perform DFS on.
+    //
+    // Post: A node is traversed and dfs is called again if there is another
+    // available node.
     void dfs(Node *currentNode)
     {
+      nodesExpanded += 1;
       currentNode->visited = true;
       
       if (currentNode->key == goalKey)
@@ -191,7 +287,10 @@ class Solver : public Graph<Board>
       currentNode->visited = false;
     }
 
+    std::vector<Node *> solution;
     Board initialBoard;
+    int nodesExpanded;
+    int nodesInSolution;
     int goalKey;
     bool solutionFound;
 };
