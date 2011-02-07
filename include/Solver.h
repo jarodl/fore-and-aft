@@ -59,6 +59,8 @@ class Solver : public Graph<Board>
       Board *goal = new Board(b.getWidth(), b.getHeight());
       goal->clearValues('B', 'R');
       goalKey = hashBoard(goal->getValues());
+      delete goal;
+      goal = NULL;
     }
 
     // Function: storeSolution
@@ -71,6 +73,8 @@ class Solver : public Graph<Board>
     // vector.
     void storeSolution()
     {
+      solution = std::vector<Node *>();
+
       std::map<int, Node *>::iterator itr;
       for (itr = nodeMap.begin(); itr != nodeMap.end(); itr++)
       {

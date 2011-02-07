@@ -19,5 +19,5 @@ From the root directory:
     ./fore-and-aft-tests
 
 In order to run the tests you need CppUTest. You can grab CppUTest from their
-website.
+website (or use the version included with this repo).
     
